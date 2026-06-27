@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+.aios/
+.pre-cr/
+dist/
+build/
+*.egg-info/
+AIOS-backfill/

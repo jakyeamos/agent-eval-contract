@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "testCommand": "uv run --with pytest python scripts/pre_cr_coverage.py",
+  "coveragePaths": [
+    ".pre-cr/coverage.lcov"
+  ],
+  "coverageFormat": "lcov",
+  "threshold": 0,
+  "surfaces": {
+    "covered": [
+      "agent_eval_contract/**"
+    ],
+    "ignored": [
+      ".gitignore",
+      ".pre-cr.json",
+      "CHANGELOG.md",
+      "README.md",
+      "RELEASE.md",
+      "pyproject.toml",
+      "scripts/**",
+      "uv.lock",
+      "tests/**"
+    ],
+    "unsupported": []
+  },
+  "checks": {
+    "coverage": true,
+    "security": true,
+    "checklist": true
+  }
+}

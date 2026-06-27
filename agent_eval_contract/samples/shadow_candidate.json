@@ -1,0 +1,10 @@
+{
+  "candidate_id": "shadow-candidate-sample",
+  "task_id": "eval-task-sample",
+  "peer_session_id": null,
+  "score": 82.5,
+  "recommendation": "good_shadow_candidate",
+  "reasons": ["measurable", "reproducible"],
+  "blockers": [],
+  "automation_state": "CANDIDATE"
+}

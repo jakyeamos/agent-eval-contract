@@ -1,0 +1,33 @@
+[project]
+name = "agent-eval-contract"
+version = "0.1.0"
+description = "Portable agent evaluation schemas, validators, templates, samples, and fixture bundle tooling."
+requires-python = ">=3.12"
+
+[project.scripts]
+agent-eval-contract-fixtures = "agent_eval_contract.fixture_runner:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-data]
+agent_eval_contract = ["release_metadata.json", "samples/*.json"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["B", "SIM"]
+
+[tool.basedpyright]
+pythonVersion = "3.12"
+include = ["agent_eval_contract", "scripts", "tests"]
+typeCheckingMode = "standard"
+reportMissingImports = "warning"
+reportMissingModuleSource = "none"

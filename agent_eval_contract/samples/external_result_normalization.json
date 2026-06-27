@@ -1,0 +1,23 @@
+{
+  "external_result": {
+    "passed": true,
+    "tests_run": ["pytest"],
+    "duration_ms": 1000
+  },
+  "request": {
+    "eval_task_id": "eval-task-sample",
+    "harness": "terminal-bench",
+    "model": "gpt-5"
+  },
+  "expected_normalized": {
+    "task_id": "eval-task-sample",
+    "condition": "external_harness",
+    "mode": "external",
+    "harness": "terminal-bench",
+    "model": "gpt-5",
+    "context_profile": "external_clean_room",
+    "final_status": "success",
+    "tests_run": ["pytest"],
+    "duration_ms": 1000
+  }
+}

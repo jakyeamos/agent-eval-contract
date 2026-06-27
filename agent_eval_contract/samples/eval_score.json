@@ -1,0 +1,14 @@
+{
+  "run_id": "eval-run-sample",
+  "task_success": 1.0,
+  "quality_adherence": 0.9,
+  "workflow_speed": 0.8,
+  "cost_efficiency": 0.7,
+  "context_effectiveness": 0.9,
+  "second_brain_effectiveness": null,
+  "context_portability": 1.0,
+  "autonomy": 0.8,
+  "user_trust": 1.0,
+  "overall_score": 0.8875,
+  "reviewer_notes": "Sample score record for contract validation."
+}

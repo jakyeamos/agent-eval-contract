@@ -1,0 +1,18 @@
+{
+  "run_id": "eval-run-sample",
+  "task_id": "eval-task-sample",
+  "condition": "aios_controlled_benchmark",
+  "mode": "controlled",
+  "harness": "pytest",
+  "model": "gpt-5",
+  "context_profile": "peer_repo_only",
+  "branch_name": "codex/sample",
+  "duration_ms": 1200,
+  "total_tokens": 3456,
+  "estimated_cost_usd": 0.42,
+  "tool_calls": 7,
+  "failed_commands": 0,
+  "files_changed": 3,
+  "tests_run": ["uv run pytest -q tests/test_agent_eval_contract.py"],
+  "final_status": "success"
+}
