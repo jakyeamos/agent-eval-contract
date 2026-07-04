@@ -76,3 +76,7 @@ Checks run on 2026-07-04 after the 0.2.0 version bump:
 ## Agent Notes
 
 Do not publish the public package as `0.1.0`: the existing `v0.1.0` tag points to the older extraction commit. Version `0.2.0` is the intended public release version.
+
+## QR Remediation Planning
+
+- 2026-07-04: Added GSD Phase 1 for QR remediation from qr-low-risk-post-branch-fix-20260704-agent-eval-contract; 1 plan(s) created from agent-eval-contract.md. Execution has not started.
