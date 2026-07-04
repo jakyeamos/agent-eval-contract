@@ -55,7 +55,7 @@ jobs:
       - name: Installed CLI smoke
         run: |
           python -m venv /tmp/agent-eval-contract-smoke
-          /tmp/agent-eval-contract-smoke/bin/python -m pip install dist/agent_eval_contract-0.1.0-py3-none-any.whl
+          /tmp/agent-eval-contract-smoke/bin/python -m pip install dist/agent_eval_contract-*.whl
           /tmp/agent-eval-contract-smoke/bin/agent-eval-contract validate --kind run --file examples/eval_run.json
           /tmp/agent-eval-contract-smoke/bin/agent-eval-contract schemas --output-dir /tmp/agent-eval-contract-schemas
           /tmp/agent-eval-contract-smoke/bin/agent-eval-contract normalize --harness terminal-bench --file examples/terminal_bench_result.json --task-id task-login-flow-001 --model gpt-5

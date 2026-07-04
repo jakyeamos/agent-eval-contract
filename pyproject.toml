@@ -1,6 +1,6 @@
 [project]
 name = "agent-eval-contract"
-version = "0.1.0"
+version = "0.2.0"
 description = "Pydantic contracts and JSON Schemas for portable agent evaluation records."
 readme = "README.md"
 requires-python = ">=3.12"

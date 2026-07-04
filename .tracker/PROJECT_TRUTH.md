@@ -4,7 +4,7 @@ projectName: Agent Eval Contract
 summary: Public Pydantic contract package for portable agent evaluation records, validators, JSON Schema export, fixture bundles, and external harness normalization.
 healthScore: 90
 statusLabel: healthy
-nextStep: Publish a post-merge release version from main; do not reuse the existing v0.1.0 tag, which points at the older extraction commit.
+nextStep: Tag and publish version 0.2.0 from main, then verify install from PyPI.
 blockers: []
 lastUpdated: 2026-07-04
 tags: [agent-eval, contract, eval, pydantic, python]
@@ -33,7 +33,7 @@ agentExpectationsVersion: 1
 
 ## Current State
 
-Agent Eval Contract is now a public package candidate. It defines Pydantic models for eval tasks, runs, scores, failures, external results, normalized runs, and fixture bundle manifests. It includes runtime validators, JSON Schema export, bundled samples/templates, Terminal-Bench and SWE-bench normalization helpers, package metadata, docs, examples, and CI.
+Agent Eval Contract is now a public package release candidate at version 0.2.0. It defines Pydantic models for eval tasks, runs, scores, failures, external results, normalized runs, and fixture bundle manifests. It includes runtime validators, JSON Schema export, bundled samples/templates, Terminal-Bench and SWE-bench normalization helpers, package metadata, docs, examples, and CI.
 
 The old internal extraction framing has been removed from the public core. Project-specific workflow vocabulary should live in `metadata` or a separate adapter package.
 
@@ -50,17 +50,17 @@ The old internal extraction framing has been removed from the public core. Proje
 
 ## What Does Not Exist Yet
 
-- No new release tag has been created for the public Pydantic package.
+- No `v0.2.0` release tag has been created yet.
 - No PyPI upload has been completed.
 - No long-term AIOS-specific adapter package exists in this repo.
 
 ## Next Step
 
-After the merge to `main` lands, bump the package to a release version that does not reuse `v0.1.0`, rebuild from `main`, tag the new commit, and publish the wheel/sdist.
+Tag `v0.2.0`, publish the wheel and sdist to PyPI, and verify install from the registry.
 
 ## Quality Ladder Notes
 
-Checks run on 2026-07-04 before merging to `main`:
+Checks run on 2026-07-04 after the 0.2.0 version bump:
 
 | Step | Status | Evidence |
 | --- | --- | --- |
@@ -70,9 +70,9 @@ Checks run on 2026-07-04 before merging to `main`:
 | Tests | Pass | `uv run pytest -q` passed with 15 tests. |
 | Dead code | Pass | `uv run --with vulture vulture agent_eval_contract tests --min-confidence 70` reported no findings. |
 | Pre-CR | Pass | `uv run --with pytest python scripts/pre_cr_coverage.py` passed. |
-| Build | Pass | `uv build --out-dir /tmp/agent-eval-contract-dist` built wheel and sdist. |
-| Installed smoke | Pass | Installed wheel validated records, exported schemas, and normalized Terminal-Bench and SWE-bench examples. |
+| Build | Pass | `uv build --out-dir /tmp/agent-eval-contract-dist` built `agent_eval_contract-0.2.0` wheel and sdist. |
+| Installed smoke | Pass | Installed the `0.2.0` wheel in a fresh venv, validated records, exported schemas, and normalized Terminal-Bench and SWE-bench examples. |
 
 ## Agent Notes
 
-Do not publish the public package as `0.1.0`: the existing `v0.1.0` tag points to the older extraction commit. Use a new version/tag for publication.
+Do not publish the public package as `0.1.0`: the existing `v0.1.0` tag points to the older extraction commit. Version `0.2.0` is the intended public release version.
