@@ -1,80 +1,78 @@
 ---
 schemaVersion: 1
 projectName: Agent Eval Contract
-summary: Portable dependency-free Python contracts for agent eval schemas, validators, templates, samples, external result normalization, and clean-room fixture generation are extracted from AIOS and release-checkable.
-healthScore: 78
-statusLabel: needs_attention
-nextStep: Resolve the BasedPyright pytest import warning, then tag v0.1.0 and update AIOS dependency policy after tag consumption is verified.
-blockers:
-  - Tagged dependency consumption from AIOS is not recorded yet.
-  - A second non-AIOS consumer has not been proven yet.
-lastUpdated: 2026-06-27
-tags: [aios, contract, eval, python]
+summary: Public Pydantic contract package for portable agent evaluation records, validators, JSON Schema export, fixture bundles, and external harness normalization.
+healthScore: 90
+statusLabel: healthy
+nextStep: Publish a post-merge release version from main; do not reuse the existing v0.1.0 tag, which points at the older extraction commit.
+blockers: []
+lastUpdated: 2026-07-04
+tags: [agent-eval, contract, eval, pydantic, python]
 areas: [engineering]
 goals: []
 repoType: library
 sourceOfTruth: mixed
 primaryLanguage: Python
 activeBranch: main
-lastCommitDate: 2026-06-27
+lastCommitDate: 2026-07-04
 quality:
   lint: pass
-  types: warning
+  types: pass
   tests: pass
-  deadCode: unknown
-  structure: warning
+  deadCode: pass
+  structure: pass
 canonicalCommands:
-  install: uv sync
+  install: uv sync --dev
   dev: unknown
   lint: uv run ruff check agent_eval_contract tests
   typecheck: uv run basedpyright agent_eval_contract tests
   test: uv run pytest -q
-  deadcode: unknown
+  deadcode: uv run --with vulture vulture agent_eval_contract tests --min-confidence 70
 agentExpectationsVersion: 1
 ---
 
 ## Current State
 
-Agent Eval Contract is an extracted AIOS contract package. It owns portable eval vocabulary, TypedDict schemas, validators, templates, bundled samples, external benchmark normalization, clean-room fixture generation, and release metadata. AIOS still owns SQLite eval storage, peer traces, shadow worktrees, second-brain lift, operator projections, and workflow integration.
+Agent Eval Contract is now a public package candidate. It defines Pydantic models for eval tasks, runs, scores, failures, external results, normalized runs, and fixture bundle manifests. It includes runtime validators, JSON Schema export, bundled samples/templates, Terminal-Bench and SWE-bench normalization helpers, package metadata, docs, examples, and CI.
 
-The package is dependency-free at runtime and has a `0.1.0` release surface. The README and release governance are now public-ready enough for a small contract package, but the release blockers in the fixture-runner metadata are still real.
+The old internal extraction framing has been removed from the public core. Project-specific workflow vocabulary should live in `metadata` or a separate adapter package.
 
 ## What Exists
 
-- `agent_eval_contract/schemas.py` for context profile, status, priority, score, task, run, score, and failure record contracts.
-- `agent_eval_contract/validators.py` for runtime contract validation.
-- `agent_eval_contract/templates.py` for template validation and rendering.
-- `agent_eval_contract/samples.py` for bundled sample records.
-- `agent_eval_contract/external.py` for external benchmark result normalization.
-- `agent_eval_contract/clean_room.py` and `agent_eval_contract/fixture_runner.py` for clean-room fixture bundle generation.
-- `release_metadata.json` and `RELEASE.md` documenting the AIOS boundary.
-- Tests covering the contract package.
+- `agent_eval_contract/models.py` for public Pydantic models and vocabulary.
+- `agent_eval_contract/validators.py` for runtime validation helpers returning typed model instances.
+- `agent_eval_contract/schema_export.py` for JSON Schema export.
+- `agent_eval_contract/external.py` for generic, Terminal-Bench, and SWE-bench normalization.
+- `agent_eval_contract/cli.py` for `fixtures`, `schemas`, `validate`, and `normalize` commands.
+- `agent_eval_contract/fixture_runner.py` for fixture bundle generation and the deprecated compatibility entrypoint.
+- `docs/contract.md`, `docs/field-reference.md`, and `docs/adapters.md` for public package docs.
+- `.github/workflows/ci.yml` for lint, format, typecheck, tests, dead-code scan, build, and installed CLI smoke.
 
 ## What Does Not Exist Yet
 
-- No tagged GitHub release is recorded in this truth snapshot.
-- No second non-AIOS consumer is proven.
-- No AIOS dependency-policy update after a tag is recorded here.
-- No dead-code scanner is configured.
+- No new release tag has been created for the public Pydantic package.
+- No PyPI upload has been completed.
+- No long-term AIOS-specific adapter package exists in this repo.
 
 ## Next Step
 
-Fix or explicitly document the BasedPyright `pytest` import warning in the test environment, then tag v0.1.0 and verify AIOS consumes the tagged package rather than relying only on a local path.
+After the merge to `main` lands, bump the package to a release version that does not reuse `v0.1.0`, rebuild from `main`, tag the new commit, and publish the wheel/sdist.
 
 ## Quality Ladder Notes
 
-Checks run on 2026-06-27:
+Checks run on 2026-07-04 before merging to `main`:
 
 | Step | Status | Evidence |
 | --- | --- | --- |
 | Lint | Pass | `uv run ruff check agent_eval_contract tests` passed. |
-| Format | Pass | `uv run ruff format --check agent_eval_contract tests` reported 10 files already formatted. |
-| Type check | Warning | `uv run basedpyright agent_eval_contract tests` exited 0 with one `pytest` import warning. |
-| Tests | Pass | `uv run pytest -q` passed with 9 tests. |
-| Fixture generation | Pass | `uv run python -m agent_eval_contract.fixture_runner --output-dir /tmp/agent-eval-contract-fixtures` succeeded with clean-room `ok: true`. |
-| Structure | Warning | `pre-cr run --workspace .` exited 1 because changed-line readiness did not produce a coverage result in the clean worktree. |
-| Dead code | Unknown | No Vulture or equivalent dead-code command is configured. |
+| Format | Pass | `uv run ruff format --check agent_eval_contract tests` passed. |
+| Type check | Pass | `uv run basedpyright agent_eval_contract tests` passed with 0 errors and 0 warnings. |
+| Tests | Pass | `uv run pytest -q` passed with 15 tests. |
+| Dead code | Pass | `uv run --with vulture vulture agent_eval_contract tests --min-confidence 70` reported no findings. |
+| Pre-CR | Pass | `uv run --with pytest python scripts/pre_cr_coverage.py` passed. |
+| Build | Pass | `uv build --out-dir /tmp/agent-eval-contract-dist` built wheel and sdist. |
+| Installed smoke | Pass | Installed wheel validated records, exported schemas, and normalized Terminal-Bench and SWE-bench examples. |
 
 ## Agent Notes
 
-Keep this repo as a portable contract package. Do not move AIOS persistence, workflow routing, or second-brain behavior into it. Breaking schema, validation, export, or package-shape changes should be treated as major releases.
+Do not publish the public package as `0.1.0`: the existing `v0.1.0` tag points to the older extraction commit. Use a new version/tag for publication.

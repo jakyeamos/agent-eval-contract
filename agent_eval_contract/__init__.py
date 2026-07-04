@@ -1,19 +1,20 @@
 from __future__ import annotations
 
 from .clean_room import run_clean_room_contract_check
-from .external import normalize_external_result, to_swe_bench_format, to_terminal_bench_format
-from .release import load_release_metadata, validate_release_metadata
-from .samples import load_sample, validate_all_samples, validate_sample
-from .schemas import (
-    AUTOMATION_STATES,
+from .external import (
+    normalize_external_result,
+    normalize_swe_bench_result,
+    normalize_terminal_bench_result,
+    to_swe_bench_format,
+    to_terminal_bench_format,
+)
+from .models import (
     CONTEXT_PROFILES,
     EVAL_RUN_MODES,
     EVAL_TASK_SOURCES,
+    EXTERNAL_HARNESSES,
     FAILURE_PRIORITIES,
     FINAL_STATUSES,
-    SCORE_FIELDS,
-    SHADOW_RECOMMENDATIONS,
-    AutomationState,
     ContextProfile,
     EvalFailure,
     EvalRun,
@@ -21,11 +22,17 @@ from .schemas import (
     EvalScore,
     EvalTask,
     EvalTaskSource,
+    ExternalHarness,
+    ExternalResult,
     FailurePriority,
     FinalStatus,
-    ShadowCandidate,
-    ShadowRecommendation,
+    FixtureBundleManifest,
+    JsonValue,
+    NormalizedRun,
 )
+from .release import load_release_metadata, validate_release_metadata
+from .samples import load_sample, validate_all_samples, validate_sample
+from .schema_export import export_json_schemas
 from .templates import (
     render_eval_template,
     supported_template_ids,
@@ -36,22 +43,24 @@ from .templates import (
 from .validators import (
     HARNESS_DIMENSION_NAMES,
     validate_context_profile,
+    validate_eval_failure,
+    validate_eval_run,
+    validate_eval_score,
+    validate_eval_task,
+    validate_external_result,
     validate_final_status,
     validate_harness_fixture_components,
     validate_priority,
 )
 
 __all__ = [
-    "AUTOMATION_STATES",
     "CONTEXT_PROFILES",
     "EVAL_RUN_MODES",
     "EVAL_TASK_SOURCES",
+    "EXTERNAL_HARNESSES",
     "FAILURE_PRIORITIES",
     "FINAL_STATUSES",
     "HARNESS_DIMENSION_NAMES",
-    "SCORE_FIELDS",
-    "SHADOW_RECOMMENDATIONS",
-    "AutomationState",
     "ContextProfile",
     "EvalFailure",
     "EvalRun",
@@ -59,13 +68,19 @@ __all__ = [
     "EvalScore",
     "EvalTask",
     "EvalTaskSource",
+    "ExternalHarness",
+    "ExternalResult",
     "FailurePriority",
     "FinalStatus",
-    "ShadowCandidate",
-    "ShadowRecommendation",
-    "normalize_external_result",
-    "load_sample",
+    "FixtureBundleManifest",
+    "JsonValue",
+    "NormalizedRun",
+    "export_json_schemas",
     "load_release_metadata",
+    "load_sample",
+    "normalize_external_result",
+    "normalize_swe_bench_result",
+    "normalize_terminal_bench_result",
     "render_eval_template",
     "run_clean_room_contract_check",
     "supported_template_ids",
@@ -73,8 +88,13 @@ __all__ = [
     "to_terminal_bench_format",
     "validate_all_samples",
     "validate_context_profile",
+    "validate_eval_failure",
+    "validate_eval_run",
+    "validate_eval_score",
+    "validate_eval_task",
     "validate_eval_template",
     "validate_eval_template_file",
+    "validate_external_result",
     "validate_final_status",
     "validate_harness_fixture_components",
     "validate_priority",

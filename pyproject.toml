@@ -1,18 +1,51 @@
 [project]
 name = "agent-eval-contract"
 version = "0.1.0"
-description = "Portable agent evaluation schemas, validators, templates, samples, and fixture bundle tooling."
+description = "Pydantic contracts and JSON Schemas for portable agent evaluation records."
+readme = "README.md"
 requires-python = ">=3.12"
+license = "MIT"
+authors = [
+    { name = "Jakye Amos" },
+]
+keywords = [
+    "agents",
+    "ai-evaluation",
+    "evals",
+    "harness",
+    "json-schema",
+    "pydantic",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+    "Typing :: Typed",
+]
+dependencies = [
+    "pydantic>=2,<3",
+]
+
+[project.urls]
+Homepage = "https://github.com/jakyeamos/agent-eval-contract"
+Repository = "https://github.com/jakyeamos/agent-eval-contract"
+Issues = "https://github.com/jakyeamos/agent-eval-contract/issues"
 
 [project.scripts]
+agent-eval-contract = "agent_eval_contract.cli:main"
 agent-eval-contract-fixtures = "agent_eval_contract.fixture_runner:main"
 
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77.0.3"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.package-data]
-agent_eval_contract = ["release_metadata.json", "samples/*.json"]
+agent_eval_contract = ["py.typed", "release_metadata.json", "samples/*.json"]
 
 [tool.ruff]
 line-length = 100
@@ -31,3 +64,10 @@ include = ["agent_eval_contract", "scripts", "tests"]
 typeCheckingMode = "standard"
 reportMissingImports = "warning"
 reportMissingModuleSource = "none"
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.39.9",
+    "pytest>=9.1.1",
+    "ruff>=0.15.20",
+]

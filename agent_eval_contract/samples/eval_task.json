@@ -1,12 +1,23 @@
 {
-  "task_id": "eval-task-sample",
-  "repo_id": "example/repo",
-  "source": "controlled_benchmark",
-  "start_sha": "abc123",
-  "context_profile": "peer_repo_only",
-  "task_type": "feature",
-  "prompt_summary": "Implement a small verified behavior change.",
-  "acceptance_criteria": ["behavior works", "tests pass"],
-  "success_criteria_files": ["docs/evals/benchmark-eval-architecture.md"],
-  "created_at": "2026-06-26T00:00:00Z"
+  "task_id": "task-login-flow-001",
+  "title": "Repair login redirect handling",
+  "description": "Fix an agent task where a web app should preserve the requested path after sign-in.",
+  "source": "benchmark",
+  "context_profile": "repo_only",
+  "acceptance_criteria": [
+    "Unauthenticated users are redirected back to the original path after sign-in.",
+    "Existing authenticated navigation keeps working.",
+    "The regression test fails before the fix and passes after it."
+  ],
+  "repo": "example/web-app",
+  "start_revision": "abc1234",
+  "tags": [
+    "web",
+    "auth",
+    "regression"
+  ],
+  "created_at": "2026-07-04T00:00:00Z",
+  "metadata": {
+    "difficulty": "medium"
+  }
 }

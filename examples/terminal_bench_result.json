@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "tests_run": [
+    "pytest tests/test_auth_redirect.py -q"
+  ],
+  "duration_ms": 125000,
+  "score": 0.91
+}

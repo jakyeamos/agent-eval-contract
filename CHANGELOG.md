@@ -2,6 +2,6 @@
 
 ## 0.1.0 - 2026-06-27
 
-- Extracted portable `agent_eval_contract` package from AIOS into `/Users/jakyeamos/agent-eval-contract`.
-- Added standalone package metadata and console script for fixture bundle generation.
-- Preserved AIOS runtime/storage surfaces as explicitly out of scope.
+- Reworked the package into a public Pydantic contract library for agent evaluation records.
+- Added typed models, runtime validators, JSON Schema export, CLI subcommands, public examples, and fixture bundles.
+- Removed private workflow vocabulary from the public core.
