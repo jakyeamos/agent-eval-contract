@@ -1,23 +1,39 @@
 {
   "external_result": {
     "passed": true,
-    "tests_run": ["pytest"],
-    "duration_ms": 1000
+    "tests_run": [
+      "pytest tests/test_auth_redirect.py -q"
+    ],
+    "duration_ms": 125000,
+    "score": 0.91
   },
   "request": {
-    "eval_task_id": "eval-task-sample",
+    "eval_task_id": "task-login-flow-001",
     "harness": "terminal-bench",
     "model": "gpt-5"
   },
   "expected_normalized": {
-    "task_id": "eval-task-sample",
-    "condition": "external_harness",
-    "mode": "external",
+    "task_id": "task-login-flow-001",
     "harness": "terminal-bench",
     "model": "gpt-5",
-    "context_profile": "external_clean_room",
+    "mode": "benchmark",
+    "context_profile": "clean_room",
     "final_status": "success",
-    "tests_run": ["pytest"],
-    "duration_ms": 1000
+    "checks": [
+      "pytest tests/test_auth_redirect.py -q"
+    ],
+    "duration_ms": 125000,
+    "score": 0.91,
+    "metadata": {
+      "source": "external_result",
+      "raw": {
+        "passed": true,
+        "tests_run": [
+          "pytest tests/test_auth_redirect.py -q"
+        ],
+        "duration_ms": 125000,
+        "score": 0.91
+      }
+    }
   }
 }

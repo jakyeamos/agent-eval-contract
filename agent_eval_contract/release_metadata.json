@@ -1,38 +1,39 @@
 {
   "package_name": "agent-eval-contract",
   "version": "0.1.0",
-  "status": "repo_extracted",
+  "contract_version": "0.1",
+  "status": "public_package_candidate",
   "python_requires": ">=3.12",
-  "portable_surfaces": [
-    "context profiles",
-    "eval task/run/score/failure schemas",
-    "harness fixture validation",
-    "eval template validation",
-    "sample record validation",
-    "external result normalization",
-    "clean-room fixture production"
+  "public_promise": "Define, validate, serialize, export JSON Schema for, and normalize portable agent evaluation records.",
+  "public_surfaces": [
+    "Pydantic evaluation record models",
+    "runtime validation helpers",
+    "JSON Schema export",
+    "external harness result normalization",
+    "sample records",
+    "template rendering and validation",
+    "fixture bundle generation",
+    "agent-eval-contract CLI"
   ],
-  "aios_owned_surfaces": [
-    "SQLite eval storage",
-    "peer traces",
-    "shadow worktrees",
-    "second-brain lift",
-    "operator projections",
-    "AIOS CLI workflow integration"
+  "out_of_scope": [
+    "evaluation execution",
+    "model provider calls",
+    "leaderboard hosting",
+    "dashboard storage",
+    "private workflow vocabulary",
+    "agent orchestration"
   ],
   "public_modules": [
-    "agent_eval_contract.schemas",
+    "agent_eval_contract.models",
     "agent_eval_contract.validators",
     "agent_eval_contract.external",
+    "agent_eval_contract.schema_export",
     "agent_eval_contract.templates",
     "agent_eval_contract.samples",
     "agent_eval_contract.clean_room",
     "agent_eval_contract.fixture_runner",
+    "agent_eval_contract.cli",
     "agent_eval_contract.release"
   ],
-  "release_blockers": [
-    "GitHub remote creation",
-    "tagged dependency consumption from AIOS",
-    "second non-AIOS consumer"
-  ]
+  "release_blockers": []
 }

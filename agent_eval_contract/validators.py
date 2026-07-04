@@ -3,17 +3,26 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from .schemas import CONTEXT_PROFILES, FAILURE_PRIORITIES, FINAL_STATUSES
+from .models import (
+    CONTEXT_PROFILES,
+    FAILURE_PRIORITIES,
+    FINAL_STATUSES,
+    EvalFailure,
+    EvalRun,
+    EvalScore,
+    EvalTask,
+    ExternalResult,
+)
 
 HARNESS_DIMENSION_NAMES = (
-    "context_precision",
-    "context_recall",
-    "gate_accuracy",
-    "success_criteria_recall",
-    "trace_completeness",
-    "false_completion_caught",
-    "recovery_evidence_present",
-    "writeback_usefulness_present",
+    "task_success",
+    "quality_adherence",
+    "runtime_reliability",
+    "context_usefulness",
+    "verification_strength",
+    "cost_efficiency",
+    "latency",
+    "human_trust",
 )
 
 
@@ -23,10 +32,7 @@ def _allowed_message(label: str, allowed: frozenset[str]) -> str:
 
 def validate_context_profile(context_profile: str) -> None:
     if context_profile not in CONTEXT_PROFILES:
-        raise ValueError(
-            _allowed_message("context_profile", CONTEXT_PROFILES)
-            + " Choose the profile that matches the context actually available to the run."
-        )
+        raise ValueError(_allowed_message("context_profile", CONTEXT_PROFILES))
 
 
 def validate_final_status(final_status: str) -> None:
@@ -37,6 +43,26 @@ def validate_final_status(final_status: str) -> None:
 def validate_priority(priority: str) -> None:
     if priority not in FAILURE_PRIORITIES:
         raise ValueError(_allowed_message("priority", FAILURE_PRIORITIES))
+
+
+def validate_eval_task(data: Mapping[str, Any]) -> EvalTask:
+    return EvalTask.model_validate(data)
+
+
+def validate_eval_run(data: Mapping[str, Any]) -> EvalRun:
+    return EvalRun.model_validate(data)
+
+
+def validate_eval_score(data: Mapping[str, Any]) -> EvalScore:
+    return EvalScore.model_validate(data)
+
+
+def validate_eval_failure(data: Mapping[str, Any]) -> EvalFailure:
+    return EvalFailure.model_validate(data)
+
+
+def validate_external_result(data: Mapping[str, Any]) -> ExternalResult:
+    return ExternalResult.model_validate(data)
 
 
 def _is_string_list(value: Any) -> bool:

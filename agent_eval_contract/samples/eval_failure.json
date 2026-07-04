@@ -1,13 +1,22 @@
 {
-  "failure_id": "eval-failure-sample",
-  "run_id": "eval-run-sample",
-  "failure_types": ["verification_too_narrow"],
-  "summary": "The sample run skipped one useful runtime check.",
-  "suspected_cause": "The task looked static but had runtime behavior.",
-  "affected_components": ["services/example.py"],
-  "recommended_fixes": ["Add direct runtime proof to the eval record."],
+  "failure_id": "failure-login-flow-001",
+  "run_id": "run-login-flow-001",
+  "failure_types": [
+    "verification_gap"
+  ],
+  "summary": "The first run checked the happy path but skipped the failed-auth redirect case.",
+  "suspected_cause": "The harness did not include a regression test for unauthenticated navigation.",
+  "affected_components": [
+    "app/auth.py",
+    "tests/test_auth_redirect.py"
+  ],
+  "recommended_fixes": [
+    "Add a regression case that starts from a protected nested route.",
+    "Record failed command output in the eval run metadata."
+  ],
   "priority": "medium",
-  "regression_task_created": false,
-  "backfill_item_created": true,
-  "standards_update_needed": false
+  "regression_task_id": "task-login-flow-001",
+  "metadata": {
+    "found_by": "review"
+  }
 }

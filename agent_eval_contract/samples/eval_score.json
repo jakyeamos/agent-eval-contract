@@ -1,14 +1,16 @@
 {
-  "run_id": "eval-run-sample",
-  "task_success": 1.0,
-  "quality_adherence": 0.9,
-  "workflow_speed": 0.8,
-  "cost_efficiency": 0.7,
-  "context_effectiveness": 0.9,
-  "second_brain_effectiveness": null,
-  "context_portability": 1.0,
-  "autonomy": 0.8,
-  "user_trust": 1.0,
-  "overall_score": 0.8875,
-  "reviewer_notes": "Sample score record for contract validation."
+  "run_id": "run-login-flow-001",
+  "overall_score": 0.91,
+  "metrics": {
+    "task_success": 1.0,
+    "quality_adherence": 0.9,
+    "verification_strength": 0.85,
+    "cost_efficiency": 0.78,
+    "human_trust": 1.0
+  },
+  "passed": true,
+  "reviewer_notes": "The agent fixed the bug and added a focused regression test.",
+  "metadata": {
+    "reviewer": "human"
+  }
 }

@@ -1,0 +1,15 @@
+{
+  "run_id": "run-login-flow-001",
+  "task_id": "task-login-flow-001",
+  "harness": "pytest",
+  "model": "gpt-5",
+  "mode": "autonomous",
+  "context_profile": "repo_only",
+  "final_status": "success",
+  "checks": [
+    "pytest tests/test_auth_redirect.py -q"
+  ],
+  "metadata": {
+    "branch": "agent/login-redirect"
+  }
+}

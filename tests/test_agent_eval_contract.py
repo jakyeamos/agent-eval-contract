@@ -1,22 +1,20 @@
-# ruff: noqa: E402
-
 from __future__ import annotations
 
-import importlib
 import json
 import os
 import subprocess
 import sys
 from pathlib import Path
+from typing import cast
 
 import pytest
-
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+from pydantic import ValidationError
 
 from agent_eval_contract import (
-    CONTEXT_PROFILES,
-    HARNESS_DIMENSION_NAMES,
+    EvalRun,
+    FixtureBundleManifest,
+    NormalizedRun,
+    export_json_schemas,
     load_release_metadata,
     load_sample,
     normalize_external_result,
@@ -25,30 +23,83 @@ from agent_eval_contract import (
     supported_template_ids,
     validate_all_samples,
     validate_context_profile,
+    validate_eval_failure,
+    validate_eval_run,
+    validate_eval_score,
+    validate_eval_task,
     validate_eval_template,
-    validate_harness_fixture_components,
+    validate_external_result,
     validate_priority,
     validate_release_metadata,
 )
 from agent_eval_contract.fixture_runner import write_contract_fixture_bundle
+from agent_eval_contract.models import JsonValue
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_import_does_not_import_aios_services() -> None:
-    for module_name in list(sys.modules):
-        if module_name == "agent_eval_contract" or module_name.startswith("agent_eval_contract."):
-            del sys.modules[module_name]
-        if module_name == "services" or module_name.startswith("services."):
-            del sys.modules[module_name]
+def test_eval_run_model_rejects_unknown_core_fields() -> None:
+    with pytest.raises(ValidationError) as exc_info:
+        EvalRun.model_validate(
+            {
+                "run_id": "run-1",
+                "task_id": "task-1",
+                "harness": "pytest",
+                "model": "gpt-5",
+                "final_status": "success",
+                "private_field": "nope",
+            }
+        )
 
-    imported = importlib.import_module("agent_eval_contract")
+    assert exc_info.value.errors()[0]["type"] == "extra_forbidden"
 
-    assert "external_clean_room" in imported.CONTEXT_PROFILES
-    assert "services" not in sys.modules
-    assert not any(module_name.startswith("services.") for module_name in sys.modules)
+
+def test_metadata_accepts_extension_data() -> None:
+    run = validate_eval_run(
+        {
+            "run_id": "run-1",
+            "task_id": "task-1",
+            "harness": "pytest",
+            "model": "gpt-5",
+            "final_status": "success",
+            "metadata": {"workflow": {"name": "local-agent", "attempt": 2}},
+        }
+    )
+
+    assert run.metadata["workflow"] == {"name": "local-agent", "attempt": 2}
+
+
+def test_public_validators_return_typed_models() -> None:
+    assert validate_eval_task(load_sample("eval_task")).task_id == "task-login-flow-001"
+    assert validate_eval_run(load_sample("eval_run")).final_status == "success"
+    assert validate_eval_score(load_sample("eval_score")).overall_score == 0.91
+    assert validate_eval_failure(load_sample("eval_failure")).priority == "medium"
+    assert (
+        validate_external_result(
+            {
+                "harness": "terminal-bench",
+                "passed": True,
+                "tests_run": ["pytest -q"],
+            }
+        ).harness
+        == "terminal-bench"
+    )
+
+
+def test_invalid_scores_expose_pydantic_errors() -> None:
+    with pytest.raises(ValidationError) as exc_info:
+        validate_eval_score(
+            {
+                "run_id": "run-1",
+                "overall_score": 1.5,
+            }
+        )
+
+    assert exc_info.value.errors()[0]["loc"] == ("overall_score",)
 
 
 def test_contract_vocabulary_validates() -> None:
-    validate_context_profile("peer_portable_context_packet")
+    validate_context_profile("repo_only")
     validate_priority("critical")
 
     with pytest.raises(ValueError, match="Invalid context_profile"):
@@ -58,49 +109,56 @@ def test_contract_vocabulary_validates() -> None:
         validate_priority("urgent")
 
 
-def test_harness_fixture_contract_rejects_malformed_fixture() -> None:
-    with pytest.raises(ValueError, match="expected_gates entries need id and expected_decision"):
-        validate_harness_fixture_components(
-            task_markdown="# Task",
-            expected_context_packets=["global.testing"],
-            expected_gates=[{"id": "approval"}],
-            expected_success_criteria=["test-quality"],
-            golden_outcome_markdown="# Outcome",
-            scoring={},
-            runs={"aios_shadow": {"harness": {"name": "AIOS"}}},
-        )
-
-
-def test_external_result_normalization_matches_contract() -> None:
+def test_external_result_normalization_returns_complete_normalized_run() -> None:
     normalized = normalize_external_result(
-        {"success": False, "tests_run": ["pytest"], "duration_ms": 10},
+        {"success": False, "tests_run": ["pytest"], "duration_ms": 10, "score": 75},
         eval_task_id="task-1",
         harness="terminal-bench",
         model="gpt-5",
     )
 
-    assert normalized["context_profile"] == "external_clean_room"
-    assert normalized["final_status"] == "failed"
-    assert normalized["tests_run"] == ["pytest"]
-    assert set(CONTEXT_PROFILES) >= {"external_clean_room", "peer_repo_only"}
-    assert "false_completion_caught" in HARNESS_DIMENSION_NAMES
+    assert isinstance(normalized, NormalizedRun)
+    assert normalized.context_profile == "clean_room"
+    assert normalized.final_status == "failed"
+    assert normalized.checks == ["pytest"]
+    assert normalized.score == 0.75
+    raw = cast(dict[str, JsonValue], normalized.metadata["raw"])
+    assert raw["success"] is False
 
 
-def test_eval_template_renderer_produces_valid_portable_templates() -> None:
+def test_eval_template_renderer_produces_valid_public_templates() -> None:
     for template_id in supported_template_ids():
-        validate_eval_template(template_id, render_eval_template(template_id))
+        rendered = render_eval_template(template_id)
+        if template_id in {"major-task-eval", "shadow-branch-comparison"}:
+            assert "Harness Condition" in rendered
+        validate_eval_template(template_id, rendered)
 
 
 def test_bundled_samples_and_release_metadata_validate() -> None:
-    assert "eval_task" in validate_all_samples()
-    assert load_sample("eval_run")["context_profile"] == "peer_repo_only"
+    assert validate_all_samples() == [
+        "eval_failure",
+        "eval_run",
+        "eval_score",
+        "eval_task",
+        "external_result_normalization",
+    ]
 
     metadata = load_release_metadata()
     validate_release_metadata(metadata)
 
     assert metadata["package_name"] == "agent-eval-contract"
-    assert "clean-room fixture production" in metadata["portable_surfaces"]
-    assert "SQLite eval storage" in metadata["aios_owned_surfaces"]
+    assert "Pydantic evaluation record models" in metadata["public_surfaces"]
+    assert metadata["release_blockers"] == []
+
+
+def test_schema_export_writes_public_model_schemas(tmp_path: Path) -> None:
+    exported = export_json_schemas(tmp_path)
+
+    assert "eval_run.schema.json" in exported
+    assert "normalized_run.schema.json" in exported
+    schema = json.loads((tmp_path / "eval_run.schema.json").read_text(encoding="utf-8"))
+    assert schema["title"] == "EvalRun"
+    assert schema["additionalProperties"] is False
 
 
 def test_clean_room_runner_uses_generated_templates(tmp_path: Path) -> None:
@@ -116,22 +174,105 @@ def test_clean_room_runner_uses_generated_templates(tmp_path: Path) -> None:
 
     assert result["ok"] is True
     assert result["template_count"] == 5
-    assert result["sample_count"] == 6
+    assert result["sample_count"] == 5
 
 
-def test_fixture_bundle_writer_produces_non_aios_artifacts(tmp_path: Path) -> None:
+def test_fixture_bundle_writer_produces_public_artifacts(tmp_path: Path) -> None:
     result = write_contract_fixture_bundle(tmp_path)
 
-    assert result["clean_room_check"]["ok"] is True
+    manifest = FixtureBundleManifest.model_validate(result)
+    assert manifest.package == "agent-eval-contract"
     assert (tmp_path / "manifest.json").exists()
     assert (tmp_path / "samples" / "eval_task.json").exists()
     assert (tmp_path / "templates" / "major-task-eval.md").exists()
-    assert json.loads((tmp_path / "manifest.json").read_text(encoding="utf-8"))["package"] == (
-        "agent-eval-contract"
+    assert (tmp_path / "schemas" / "eval_run.schema.json").exists()
+    assert result["metadata"]["public_surfaces"]
+
+
+def test_main_cli_subcommands_work(tmp_path: Path) -> None:
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(ROOT)
+    fixture_dir = tmp_path / "bundle"
+    schema_dir = tmp_path / "schemas"
+
+    fixtures = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "agent_eval_contract.cli",
+            "fixtures",
+            "--output-dir",
+            str(fixture_dir),
+        ],
+        cwd=tmp_path,
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
     )
+    assert json.loads(fixtures.stdout)["package"] == "agent-eval-contract"
+
+    schemas = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "agent_eval_contract.cli",
+            "schemas",
+            "--output-dir",
+            str(schema_dir),
+        ],
+        cwd=tmp_path,
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert "eval_run.schema.json" in json.loads(schemas.stdout)["schemas"]
+
+    validated = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "agent_eval_contract.cli",
+            "validate",
+            "--kind",
+            "run",
+            "--file",
+            str(ROOT / "examples" / "eval_run.json"),
+        ],
+        cwd=tmp_path,
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert json.loads(validated.stdout)["run_id"] == "run-login-flow-001"
+
+    normalized = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "agent_eval_contract.cli",
+            "normalize",
+            "--harness",
+            "terminal-bench",
+            "--file",
+            str(ROOT / "examples" / "terminal_bench_result.json"),
+            "--task-id",
+            "task-login-flow-001",
+            "--model",
+            "gpt-5",
+        ],
+        cwd=tmp_path,
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert json.loads(normalized.stdout)["final_status"] == "success"
 
 
-def test_fixture_runner_cli_works_outside_repo_cwd(tmp_path: Path) -> None:
+def test_deprecated_fixture_runner_cli_still_works(tmp_path: Path) -> None:
     output_dir = tmp_path / "bundle"
     env = os.environ.copy()
     env["PYTHONPATH"] = str(ROOT)
@@ -152,6 +293,11 @@ def test_fixture_runner_cli_works_outside_repo_cwd(tmp_path: Path) -> None:
     )
 
     manifest = json.loads(completed.stdout)
-    assert manifest["clean_room_check"]["ok"] is True
-    assert manifest["clean_room_check"]["sample_count"] == 6
-    assert (output_dir / "manifest.json").exists()
+    assert manifest["samples"] == [
+        "eval_failure",
+        "eval_run",
+        "eval_score",
+        "eval_task",
+        "external_result_normalization",
+    ]
+    assert (output_dir / "schemas" / "normalized_run.schema.json").exists()
