@@ -5,9 +5,9 @@ Adapters translate harness-specific output into public contract records. They sh
 ## Terminal-Bench
 
 ```python
-from agent_eval_contract import normalize_external_result
+from agent_eval_contract import normalize_terminal_bench_result
 
-normalized = normalize_external_result(
+normalized = normalize_terminal_bench_result(
     {
         "passed": True,
         "tests_run": ["pytest -q"],
@@ -18,6 +18,12 @@ normalized = normalize_external_result(
     harness="terminal-bench",
     model="gpt-5",
 )
+```
+
+The CLI equivalent:
+
+```bash
+agent-eval-contract normalize --harness terminal-bench --file examples/terminal_bench_result.json --task-id task-login-flow-001 --model gpt-5
 ```
 
 ## SWE-bench
@@ -36,6 +42,14 @@ swe_task = to_swe_bench_format(
     }
 )
 ```
+
+Normalize SWE-bench style result output:
+
+```bash
+agent-eval-contract normalize --harness swe-bench --file examples/swe_bench_result.json
+```
+
+The SWE-bench adapter reads `instance_id`, `resolved`, `model_name_or_path`, `FAIL_TO_PASS`, `PASS_TO_PASS`, `duration_seconds`, and `score` when present. Unknown JSON-compatible fields are preserved under `metadata.raw`.
 
 ## Extension Packages
 

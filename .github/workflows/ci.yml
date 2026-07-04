@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - public-pydantic-contract
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  quality:
+    name: Python ${{ matrix.python-version }}
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.12"
+          - "3.13"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Ruff lint
+        run: uv run ruff check agent_eval_contract tests
+
+      - name: Ruff format check
+        run: uv run ruff format --check agent_eval_contract tests
+
+      - name: Type check
+        run: uv run basedpyright agent_eval_contract tests
+
+      - name: Tests
+        run: uv run pytest -q
+
+      - name: Dead code scan
+        run: uv run --with vulture vulture agent_eval_contract tests --min-confidence 70
+
+      - name: Build package
+        run: uv build --out-dir dist
+
+      - name: Installed CLI smoke
+        run: |
+          python -m venv /tmp/agent-eval-contract-smoke
+          /tmp/agent-eval-contract-smoke/bin/python -m pip install dist/agent_eval_contract-0.1.0-py3-none-any.whl
+          /tmp/agent-eval-contract-smoke/bin/agent-eval-contract validate --kind run --file examples/eval_run.json
+          /tmp/agent-eval-contract-smoke/bin/agent-eval-contract schemas --output-dir /tmp/agent-eval-contract-schemas
+          /tmp/agent-eval-contract-smoke/bin/agent-eval-contract normalize --harness terminal-bench --file examples/terminal_bench_result.json --task-id task-login-flow-001 --model gpt-5

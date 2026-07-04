@@ -14,6 +14,8 @@
 
 All public models reject unknown top-level fields. Put project-specific or harness-specific values under `metadata`.
 
+See [field-reference.md](field-reference.md) for required fields, allowed vocabulary, and field semantics.
+
 ## Validation
 
 Validation functions return Pydantic model instances:

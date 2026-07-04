@@ -13,7 +13,7 @@
 
 ## Release Checks
 
-Run before tagging or publishing:
+CI runs the same quality ladder on pull requests and pushes. Run this local block before tagging or publishing:
 
 ```bash
 uv run ruff check agent_eval_contract tests
@@ -30,6 +30,7 @@ python -m venv /tmp/agent-eval-contract-venv
 /tmp/agent-eval-contract-venv/bin/pip install /tmp/agent-eval-contract-dist/agent_eval_contract-0.1.0-py3-none-any.whl
 /tmp/agent-eval-contract-venv/bin/agent-eval-contract validate --kind run --file examples/eval_run.json
 /tmp/agent-eval-contract-venv/bin/agent-eval-contract schemas --output-dir /tmp/agent-eval-contract-schemas
+/tmp/agent-eval-contract-venv/bin/agent-eval-contract normalize --harness swe-bench --file examples/swe_bench_result.json
 ```
 
 ## Boundaries

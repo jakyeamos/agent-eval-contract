@@ -18,6 +18,8 @@ from agent_eval_contract import (
     load_release_metadata,
     load_sample,
     normalize_external_result,
+    normalize_swe_bench_result,
+    normalize_terminal_bench_result,
     render_eval_template,
     run_clean_room_contract_check,
     supported_template_ids,
@@ -124,6 +126,40 @@ def test_external_result_normalization_returns_complete_normalized_run() -> None
     assert normalized.score == 0.75
     raw = cast(dict[str, JsonValue], normalized.metadata["raw"])
     assert raw["success"] is False
+
+
+def test_terminal_bench_adapter_handles_command_and_seconds() -> None:
+    normalized = normalize_terminal_bench_result(
+        {
+            "task_id": "terminal-task-1",
+            "status": "passed",
+            "command": "pytest -q",
+            "duration_seconds": 1.25,
+        },
+        model="gpt-5",
+    )
+
+    assert normalized.task_id == "terminal-task-1"
+    assert normalized.harness == "terminal-bench"
+    assert normalized.final_status == "success"
+    assert normalized.checks == ["pytest -q"]
+    assert normalized.duration_ms == 1250
+    assert normalized.metadata["source"] == "terminal-bench"
+
+
+def test_swe_bench_adapter_reads_instance_and_test_lists() -> None:
+    normalized = normalize_swe_bench_result(load_json_example("swe_bench_result.json"))
+
+    assert normalized.task_id == "example__repo-123"
+    assert normalized.harness == "swe-bench"
+    assert normalized.model == "gpt-5"
+    assert normalized.final_status == "success"
+    assert normalized.duration_ms == 92400
+    assert normalized.score == 1.0
+    assert normalized.checks == [
+        "tests/test_checkout.py::test_preserves_discount",
+        "tests/test_checkout.py::test_calculates_total",
+    ]
 
 
 def test_eval_template_renderer_produces_valid_public_templates() -> None:
@@ -271,6 +307,25 @@ def test_main_cli_subcommands_work(tmp_path: Path) -> None:
     )
     assert json.loads(normalized.stdout)["final_status"] == "success"
 
+    swe_normalized = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "agent_eval_contract.cli",
+            "normalize",
+            "--harness",
+            "swe-bench",
+            "--file",
+            str(ROOT / "examples" / "swe_bench_result.json"),
+        ],
+        cwd=tmp_path,
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert json.loads(swe_normalized.stdout)["task_id"] == "example__repo-123"
+
 
 def test_deprecated_fixture_runner_cli_still_works(tmp_path: Path) -> None:
     output_dir = tmp_path / "bundle"
@@ -301,3 +356,9 @@ def test_deprecated_fixture_runner_cli_still_works(tmp_path: Path) -> None:
         "external_result_normalization",
     ]
     assert (output_dir / "schemas" / "normalized_run.schema.json").exists()
+
+
+def load_json_example(name: str) -> dict[str, JsonValue]:
+    loaded = json.loads((ROOT / "examples" / name).read_text(encoding="utf-8"))
+    assert isinstance(loaded, dict)
+    return loaded

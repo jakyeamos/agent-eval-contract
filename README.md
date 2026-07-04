@@ -46,6 +46,7 @@ agent-eval-contract validate --kind run --file examples/eval_run.json
 agent-eval-contract schemas --output-dir /tmp/agent-eval-contract-schemas
 agent-eval-contract fixtures --output-dir /tmp/agent-eval-contract-fixtures
 agent-eval-contract normalize --harness terminal-bench --file examples/terminal_bench_result.json --task-id task-login-flow-001 --model gpt-5
+agent-eval-contract normalize --harness swe-bench --file examples/swe_bench_result.json
 ```
 
 The legacy `agent-eval-contract-fixtures` command still writes fixture bundles for one release.
@@ -68,7 +69,7 @@ The public core uses generic vocabulary only. Project-specific concepts should l
 - `mode`: `interactive`, `autonomous`, `shadow`, `replay`, `benchmark`
 - `final_status`: `success`, `partial`, `failed`, `abandoned`, `error`
 
-See [docs/contract.md](docs/contract.md) and [docs/adapters.md](docs/adapters.md) for the model contract and adapter guidance.
+See [docs/contract.md](docs/contract.md), [docs/field-reference.md](docs/field-reference.md), and [docs/adapters.md](docs/adapters.md) for the model contract and adapter guidance.
 
 ## Development
 

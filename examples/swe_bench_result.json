@@ -1,0 +1,13 @@
+{
+  "instance_id": "example__repo-123",
+  "resolved": true,
+  "model_name_or_path": "gpt-5",
+  "FAIL_TO_PASS": [
+    "tests/test_checkout.py::test_preserves_discount"
+  ],
+  "PASS_TO_PASS": [
+    "tests/test_checkout.py::test_calculates_total"
+  ],
+  "duration_seconds": 92.4,
+  "score": 100
+}

@@ -39,8 +39,17 @@ def _is_json_value(value: object) -> bool:
 
 
 def _passed_status(data: Mapping[str, Any]) -> FinalStatus:
-    passed_value = data.get("passed", data.get("success"))
+    passed_value = data.get("passed", data.get("success", data.get("resolved")))
     if passed_value is None:
+        status = data.get("status")
+        if isinstance(status, str):
+            lowered = status.lower()
+            if lowered in {"passed", "pass", "success", "resolved"}:
+                return "success"
+            if lowered in {"failed", "fail", "failure", "unresolved"}:
+                return "failed"
+            if lowered in {"error", "errored"}:
+                return "error"
         return "partial"
     return "success" if bool(passed_value) else "failed"
 
@@ -58,6 +67,39 @@ def _score(data: Mapping[str, Any]) -> float | None:
     if 0.0 <= numeric <= 100.0:
         return numeric / 100.0
     return None
+
+
+def _duration_ms(data: Mapping[str, Any]) -> int | None:
+    value = data.get("duration_ms")
+    if value is None:
+        seconds = data.get("duration_seconds", data.get("elapsed_seconds"))
+        if seconds is None:
+            return None
+        try:
+            return int(float(seconds) * 1000)
+        except (TypeError, ValueError):
+            return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _terminal_checks(data: Mapping[str, Any]) -> list[str]:
+    checks = data.get("tests_run", data.get("checks"))
+    if checks is not None:
+        return _string_list(checks)
+    command = data.get("command")
+    return [str(command)] if command else []
+
+
+def _swe_bench_checks(data: Mapping[str, Any]) -> list[str]:
+    checks = _string_list(data.get("tests_run", data.get("checks", [])))
+    if checks:
+        return checks
+    fail_to_pass = _string_list(data.get("FAIL_TO_PASS", data.get("fail_to_pass", [])))
+    pass_to_pass = _string_list(data.get("PASS_TO_PASS", data.get("pass_to_pass", [])))
+    return [*fail_to_pass, *pass_to_pass]
 
 
 def to_swe_bench_format(eval_task: Mapping[str, Any]) -> dict[str, Any]:
@@ -90,6 +132,18 @@ def normalize_external_result(
     harness: ExternalHarness | str,
     model: str | None = None,
 ) -> NormalizedRun:
+    if harness == "terminal-bench":
+        return normalize_terminal_bench_result(
+            external_result,
+            eval_task_id=eval_task_id,
+            model=model,
+        )
+    if harness == "swe-bench":
+        return normalize_swe_bench_result(
+            external_result,
+            eval_task_id=eval_task_id,
+            model=model,
+        )
     data = _as_mapping(external_result)
     task_id = eval_task_id or data.get("task_id") or data.get("instance_id")
     if not task_id:
@@ -102,10 +156,60 @@ def normalize_external_result(
         model=str(resolved_model),
         final_status=_passed_status(data),
         checks=_string_list(checks),
-        duration_ms=data.get("duration_ms"),
+        duration_ms=_duration_ms(data),
         score=_score(data),
         metadata={
             "source": "external_result",
+            "raw": _json_metadata(data),
+        },
+    )
+
+
+def normalize_terminal_bench_result(
+    external_result: Mapping[str, Any],
+    *,
+    eval_task_id: str | None = None,
+    model: str | None = None,
+) -> NormalizedRun:
+    data = _as_mapping(external_result)
+    task_id = eval_task_id or data.get("task_id")
+    if not task_id:
+        raise ValueError("eval_task_id is required when the Terminal-Bench result has no task_id")
+    return NormalizedRun(
+        task_id=str(task_id),
+        harness="terminal-bench",
+        model=str(model or data.get("model") or "unknown"),
+        final_status=_passed_status(data),
+        checks=_terminal_checks(data),
+        duration_ms=_duration_ms(data),
+        score=_score(data),
+        metadata={
+            "source": "terminal-bench",
+            "raw": _json_metadata(data),
+        },
+    )
+
+
+def normalize_swe_bench_result(
+    external_result: Mapping[str, Any],
+    *,
+    eval_task_id: str | None = None,
+    model: str | None = None,
+) -> NormalizedRun:
+    data = _as_mapping(external_result)
+    task_id = eval_task_id or data.get("instance_id") or data.get("task_id")
+    if not task_id:
+        raise ValueError("eval_task_id is required when the SWE-bench result has no instance_id")
+    return NormalizedRun(
+        task_id=str(task_id),
+        harness="swe-bench",
+        model=str(model or data.get("model_name_or_path") or data.get("model") or "unknown"),
+        final_status=_passed_status(data),
+        checks=_swe_bench_checks(data),
+        duration_ms=_duration_ms(data),
+        score=_score(data),
+        metadata={
+            "source": "swe-bench",
             "raw": _json_metadata(data),
         },
     )

@@ -1,7 +1,13 @@
 from __future__ import annotations
 
 from .clean_room import run_clean_room_contract_check
-from .external import normalize_external_result, to_swe_bench_format, to_terminal_bench_format
+from .external import (
+    normalize_external_result,
+    normalize_swe_bench_result,
+    normalize_terminal_bench_result,
+    to_swe_bench_format,
+    to_terminal_bench_format,
+)
 from .models import (
     CONTEXT_PROFILES,
     EVAL_RUN_MODES,
@@ -73,6 +79,8 @@ __all__ = [
     "load_release_metadata",
     "load_sample",
     "normalize_external_result",
+    "normalize_swe_bench_result",
+    "normalize_terminal_bench_result",
     "render_eval_template",
     "run_clean_room_contract_check",
     "supported_template_ids",

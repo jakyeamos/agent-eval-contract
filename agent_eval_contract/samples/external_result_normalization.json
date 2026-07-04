@@ -25,7 +25,7 @@
     "duration_ms": 125000,
     "score": 0.91,
     "metadata": {
-      "source": "external_result",
+      "source": "terminal-bench",
       "raw": {
         "passed": true,
         "tests_run": [
