@@ -2,10 +2,10 @@
 schemaVersion: 1
 projectName: Agent Eval Contract
 summary: Public Pydantic contract package for portable agent evaluation records, validators, JSON Schema export, fixture bundles, and external harness normalization.
-healthScore: 88
-statusLabel: needs-attention
-nextStep: Provide PyPI publish credentials or run PyPI trusted publishing, then upload the verified 0.2.0 artifacts and verify install from PyPI.
-blockers: [PyPI credentials are not configured in the local shell/keyring, and trusted publishing OIDC is unavailable outside a supported CI publish job.]
+healthScore: 92
+statusLabel: healthy
+nextStep: Monitor early install/use feedback and decide whether to add a dedicated AIOS adapter package separately.
+blockers: []
 lastUpdated: 2026-07-04
 tags: [agent-eval, contract, eval, pydantic, python]
 areas: [engineering]
@@ -33,7 +33,7 @@ agentExpectationsVersion: 1
 
 ## Current State
 
-Agent Eval Contract is now a tagged public package release candidate at version 0.2.0. It defines Pydantic models for eval tasks, runs, scores, failures, external results, normalized runs, and fixture bundle manifests. It includes runtime validators, JSON Schema export, bundled samples/templates, Terminal-Bench and SWE-bench normalization helpers, package metadata, docs, examples, and CI.
+Agent Eval Contract is now published on PyPI at version 0.2.0. It defines Pydantic models for eval tasks, runs, scores, failures, external results, normalized runs, and fixture bundle manifests. It includes runtime validators, JSON Schema export, bundled samples/templates, Terminal-Bench and SWE-bench normalization helpers, package metadata, docs, examples, and CI.
 
 The old internal extraction framing has been removed from the public core. Project-specific workflow vocabulary should live in `metadata` or a separate adapter package.
 
@@ -50,12 +50,11 @@ The old internal extraction framing has been removed from the public core. Proje
 
 ## What Does Not Exist Yet
 
-- No PyPI upload has been completed.
 - No long-term AIOS-specific adapter package exists in this repo.
 
 ## Next Step
 
-Publish the already-built `0.2.0` wheel and sdist to PyPI with valid credentials, then verify install from the registry.
+Monitor early install/use feedback and keep AIOS-specific vocabulary in a separate adapter package rather than the public core.
 
 ## Quality Ladder Notes
 
@@ -71,7 +70,8 @@ Checks run on 2026-07-04 after the 0.2.0 version bump:
 | Pre-CR | Pass | `uv run --with pytest python scripts/pre_cr_coverage.py` passed. |
 | Build | Pass | `uv build --out-dir /tmp/agent-eval-contract-dist` built `agent_eval_contract-0.2.0` wheel and sdist. |
 | Installed smoke | Pass | Installed the `0.2.0` wheel in a fresh venv, validated records, exported schemas, and normalized Terminal-Bench and SWE-bench examples. |
-| Publish | Fail | `uv publish /tmp/agent-eval-contract-dist/agent_eval_contract-0.2.0.tar.gz /tmp/agent-eval-contract-dist/agent_eval_contract-0.2.0-py3-none-any.whl` stopped before upload because PyPI credentials/keyring were missing and no OIDC token was available. |
+| Publish | Pass | `uv publish` uploaded the `0.2.0` wheel and sdist to PyPI. |
+| Registry smoke | Pass | Installed `agent-eval-contract==0.2.0` from PyPI in a fresh venv, validated records, exported schemas, and normalized Terminal-Bench and SWE-bench examples. |
 
 ## Agent Notes
 
