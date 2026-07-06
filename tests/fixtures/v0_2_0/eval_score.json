@@ -1,0 +1,13 @@
+{
+  "run_id": "run-login-flow-001",
+  "overall_score": 0.91,
+  "metrics": {
+    "task_success": 1.0,
+    "quality_adherence": 0.9
+  },
+  "passed": true,
+  "reviewer_notes": "The agent fixed the bug and added a focused regression test.",
+  "metadata": {
+    "reviewer": "human"
+  }
+}

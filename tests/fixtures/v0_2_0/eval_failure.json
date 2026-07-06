@@ -1,0 +1,20 @@
+{
+  "failure_id": "failure-login-flow-001",
+  "run_id": "run-login-flow-001",
+  "failure_types": [
+    "verification_gap"
+  ],
+  "summary": "The first run checked the happy path but skipped the failed-auth redirect case.",
+  "suspected_cause": "The harness did not include a regression test for unauthenticated navigation.",
+  "affected_components": [
+    "app/auth.py"
+  ],
+  "recommended_fixes": [
+    "Add a regression case that starts from a protected nested route."
+  ],
+  "priority": "medium",
+  "regression_task_id": "task-login-flow-001",
+  "metadata": {
+    "found_by": "review"
+  }
+}

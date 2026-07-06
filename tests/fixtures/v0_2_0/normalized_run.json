@@ -1,0 +1,21 @@
+{
+  "task_id": "task-login-flow-001",
+  "harness": "terminal-bench",
+  "model": "gpt-5",
+  "mode": "benchmark",
+  "context_profile": "clean_room",
+  "final_status": "success",
+  "checks": [
+    "pytest tests/test_auth_redirect.py -q"
+  ],
+  "duration_ms": 125000,
+  "score": 0.91,
+  "metadata": {
+    "source": "terminal-bench",
+    "raw": {
+      "passed": true,
+      "duration_ms": 125000,
+      "score": 0.91
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "eval_failure": [
+    "failure_id",
+    "failure_types",
+    "run_id",
+    "summary"
+  ],
+  "eval_run": [
+    "final_status",
+    "harness",
+    "model",
+    "run_id",
+    "task_id"
+  ],
+  "eval_score": [
+    "overall_score",
+    "run_id"
+  ],
+  "eval_task": [
+    "description",
+    "task_id",
+    "title"
+  ],
+  "external_result": [
+    "harness"
+  ],
+  "fixture_bundle_manifest": [
+    "contract_version",
+    "version"
+  ],
+  "normalized_run": [
+    "final_status",
+    "harness",
+    "model",
+    "task_id"
+  ]
+}
