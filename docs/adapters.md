@@ -15,7 +15,6 @@ normalized = normalize_terminal_bench_result(
         "score": 0.9,
     },
     eval_task_id="task-1",
-    harness="terminal-bench",
     model="gpt-5",
 )
 ```
