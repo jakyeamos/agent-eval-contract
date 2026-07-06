@@ -1,0 +1,87 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  verify:
+    name: Verify and build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Ruff lint
+        run: uv run ruff check agent_eval_contract tests
+
+      - name: Ruff format check
+        run: uv run ruff format --check agent_eval_contract tests
+
+      - name: Type check
+        run: uv run basedpyright agent_eval_contract tests
+
+      - name: Tests
+        run: uv run pytest -q
+
+      - name: Dead code scan
+        run: uv run --with vulture vulture agent_eval_contract tests --min-confidence 70
+
+      - name: Build package
+        run: uv build --out-dir dist
+
+      - name: Check package metadata
+        run: uv run --with twine twine check dist/*
+
+      - name: Installed CLI smoke
+        run: |
+          python -m venv /tmp/release-smoke
+          /tmp/release-smoke/bin/python -m pip install dist/agent_eval_contract-*.whl
+          /tmp/release-smoke/bin/agent-eval-contract validate --kind run --file examples/eval_run.json
+          /tmp/release-smoke/bin/agent-eval-contract schemas --output-dir /tmp/release-schemas
+          /tmp/release-smoke/bin/agent-eval-contract normalize --harness swe-bench --file examples/swe_bench_result.json
+          /tmp/release-smoke/bin/agent-eval-contract version
+
+      - name: Upload distribution artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    name: Publish to PyPI
+    needs: verify
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment: pypi
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+      - name: Download distribution artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI (trusted publishing)
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
