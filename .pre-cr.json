@@ -19,7 +19,8 @@
       "pyproject.toml",
       "scripts/**",
       "uv.lock",
-      "tests/**"
+      "tests/**",
+      "examples/**"
     ],
     "unsupported": []
   },

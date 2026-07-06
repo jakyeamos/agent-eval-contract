@@ -1,0 +1,17 @@
+{
+  "task_id": "task-checkout-discount-001",
+  "title": "Preserve discount in checkout total",
+  "description": "A regression drops the applied discount from the checkout total. Fix it and cover it with a test.",
+  "source": "ci",
+  "context_profile": "repo_only",
+  "acceptance_criteria": [
+    "The checkout total includes the applied discount.",
+    "A regression test fails before the fix and passes after it."
+  ],
+  "repo": "example/shop",
+  "start_revision": "def5678",
+  "tags": [
+    "checkout",
+    "regression"
+  ]
+}

@@ -15,7 +15,6 @@ normalized = normalize_terminal_bench_result(
         "score": 0.9,
     },
     eval_task_id="task-1",
-    harness="terminal-bench",
     model="gpt-5",
 )
 ```
@@ -50,6 +49,26 @@ agent-eval-contract normalize --harness swe-bench --file examples/swe_bench_resu
 ```
 
 The SWE-bench adapter reads `instance_id`, `resolved`, `model_name_or_path`, `FAIL_TO_PASS`, `PASS_TO_PASS`, `duration_seconds`, and `score` when present. Unknown JSON-compatible fields are preserved under `metadata.raw`.
+
+## Validating in other languages
+
+JSON Schema export is a first-class use case, not only a Python helper. Export
+the schemas and validate records with any JSON Schema tool. For example, with
+[`ajv-cli`](https://github.com/ajv-validator/ajv-cli):
+
+```bash
+agent-eval-contract schemas --output-dir schemas
+npx ajv validate -c ajv-formats -s schemas/eval_run.schema.json -d eval_run.json
+```
+
+The `-c ajv-formats` plugin is needed so `date-time` fields (such as
+`started_at`) validate.
+
+## Writing your own adapter
+
+See [writing-adapters.md](writing-adapters.md) for the adapter pattern, required
+output fields, where to put raw data, when to add enum values vs use metadata,
+and how to test an adapter.
 
 ## Extension Packages
 

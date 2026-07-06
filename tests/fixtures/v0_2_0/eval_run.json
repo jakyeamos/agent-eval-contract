@@ -1,0 +1,24 @@
+{
+  "run_id": "run-login-flow-001",
+  "task_id": "task-login-flow-001",
+  "harness": "pytest",
+  "model": "gpt-5",
+  "mode": "autonomous",
+  "context_profile": "repo_only",
+  "final_status": "success",
+  "started_at": "2026-07-04T00:01:00Z",
+  "completed_at": "2026-07-04T00:03:05Z",
+  "duration_ms": 125000,
+  "total_tokens": 8420,
+  "estimated_cost_usd": 0.54,
+  "tool_calls": 18,
+  "failed_steps": 1,
+  "files_changed": 4,
+  "checks": [
+    "pytest tests/test_auth_redirect.py -q"
+  ],
+  "output_summary": "Implemented redirect preservation and added regression coverage.",
+  "metadata": {
+    "branch": "agent/login-redirect"
+  }
+}
