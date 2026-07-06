@@ -1,0 +1,104 @@
+{
+  "$defs": {
+    "JsonValue": {}
+  },
+  "additionalProperties": false,
+  "properties": {
+    "acceptance_criteria": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Acceptance Criteria",
+      "type": "array"
+    },
+    "context_profile": {
+      "default": "repo_only",
+      "enum": [
+        "repo_only",
+        "provided_context",
+        "clean_room",
+        "tool_augmented",
+        "full_workspace"
+      ],
+      "title": "Context Profile",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "description": {
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Metadata",
+      "type": "object"
+    },
+    "repo": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Repo"
+    },
+    "source": {
+      "default": "manual",
+      "enum": [
+        "manual",
+        "ci",
+        "benchmark",
+        "production_trace",
+        "synthetic"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "start_revision": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Start Revision"
+    },
+    "tags": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Tags",
+      "type": "array"
+    },
+    "task_id": {
+      "minLength": 1,
+      "title": "Task Id",
+      "type": "string"
+    },
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id",
+    "title",
+    "description"
+  ],
+  "title": "EvalTask",
+  "type": "object"
+}

@@ -1,0 +1,181 @@
+{
+  "$defs": {
+    "JsonValue": {}
+  },
+  "additionalProperties": false,
+  "properties": {
+    "checks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Checks",
+      "type": "array"
+    },
+    "completed_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Completed At"
+    },
+    "context_profile": {
+      "default": "repo_only",
+      "enum": [
+        "repo_only",
+        "provided_context",
+        "clean_room",
+        "tool_augmented",
+        "full_workspace"
+      ],
+      "title": "Context Profile",
+      "type": "string"
+    },
+    "duration_ms": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Duration Ms"
+    },
+    "estimated_cost_usd": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Estimated Cost Usd"
+    },
+    "failed_steps": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Failed Steps",
+      "type": "integer"
+    },
+    "files_changed": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Files Changed",
+      "type": "integer"
+    },
+    "final_status": {
+      "enum": [
+        "success",
+        "partial",
+        "failed",
+        "abandoned",
+        "error"
+      ],
+      "title": "Final Status",
+      "type": "string"
+    },
+    "harness": {
+      "minLength": 1,
+      "title": "Harness",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Metadata",
+      "type": "object"
+    },
+    "mode": {
+      "default": "interactive",
+      "enum": [
+        "interactive",
+        "autonomous",
+        "shadow",
+        "replay",
+        "benchmark"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "model": {
+      "minLength": 1,
+      "title": "Model",
+      "type": "string"
+    },
+    "output_summary": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Output Summary"
+    },
+    "run_id": {
+      "minLength": 1,
+      "title": "Run Id",
+      "type": "string"
+    },
+    "started_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Started At"
+    },
+    "task_id": {
+      "minLength": 1,
+      "title": "Task Id",
+      "type": "string"
+    },
+    "tool_calls": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Tool Calls",
+      "type": "integer"
+    },
+    "total_tokens": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Total Tokens"
+    }
+  },
+  "required": [
+    "run_id",
+    "task_id",
+    "harness",
+    "model",
+    "final_status"
+  ],
+  "title": "EvalRun",
+  "type": "object"
+}

@@ -1,0 +1,107 @@
+{
+  "$defs": {
+    "JsonValue": {}
+  },
+  "additionalProperties": false,
+  "properties": {
+    "checks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Checks",
+      "type": "array"
+    },
+    "context_profile": {
+      "default": "clean_room",
+      "enum": [
+        "repo_only",
+        "provided_context",
+        "clean_room",
+        "tool_augmented",
+        "full_workspace"
+      ],
+      "title": "Context Profile",
+      "type": "string"
+    },
+    "duration_ms": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Duration Ms"
+    },
+    "final_status": {
+      "enum": [
+        "success",
+        "partial",
+        "failed",
+        "abandoned",
+        "error"
+      ],
+      "title": "Final Status",
+      "type": "string"
+    },
+    "harness": {
+      "minLength": 1,
+      "title": "Harness",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Metadata",
+      "type": "object"
+    },
+    "mode": {
+      "default": "benchmark",
+      "enum": [
+        "interactive",
+        "autonomous",
+        "shadow",
+        "replay",
+        "benchmark"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "model": {
+      "minLength": 1,
+      "title": "Model",
+      "type": "string"
+    },
+    "score": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Score"
+    },
+    "task_id": {
+      "minLength": 1,
+      "title": "Task Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id",
+    "harness",
+    "model",
+    "final_status"
+  ],
+  "title": "NormalizedRun",
+  "type": "object"
+}

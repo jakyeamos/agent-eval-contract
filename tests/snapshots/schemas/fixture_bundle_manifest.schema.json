@@ -1,0 +1,62 @@
+{
+  "$defs": {
+    "JsonValue": {}
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "minLength": 1,
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Metadata",
+      "type": "object"
+    },
+    "package": {
+      "default": "agent-eval-contract",
+      "title": "Package",
+      "type": "string"
+    },
+    "samples": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Samples",
+      "type": "array"
+    },
+    "schemas": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Schemas",
+      "type": "array"
+    },
+    "templates": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Templates",
+      "type": "array"
+    },
+    "version": {
+      "minLength": 1,
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "version",
+    "contract_version"
+  ],
+  "title": "FixtureBundleManifest",
+  "type": "object"
+}
