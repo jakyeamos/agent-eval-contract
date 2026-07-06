@@ -126,6 +126,10 @@ See [docs/contract.md](docs/contract.md), [docs/field-reference.md](docs/field-r
 
 Package versions follow SemVer for the Python API; the contract version tracks the JSON record/schema shape. See [docs/stability.md](docs/stability.md) for the full policy.
 
+## Security
+
+See [SECURITY.md](SECURITY.md) for how to report vulnerabilities and the package's supply-chain stance.
+
 ## Development
 
 ```bash
