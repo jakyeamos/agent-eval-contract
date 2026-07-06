@@ -86,13 +86,17 @@ Validation returns typed Pydantic model instances. Invalid records raise `pydant
 
 ```bash
 agent-eval-contract validate --kind run --file examples/eval_run.json
+agent-eval-contract validate --kind run --file examples/eval_run.json --quiet   # exit code only
+agent-eval-contract validate --kind run --file examples/eval_run.json --pretty  # indented JSON
+agent-eval-contract inspect --file examples/eval_run.json   # report which models the file matches
 agent-eval-contract schemas --output-dir /tmp/agent-eval-contract-schemas
 agent-eval-contract fixtures --output-dir /tmp/agent-eval-contract-fixtures
 agent-eval-contract normalize --harness terminal-bench --file examples/terminal_bench_result.json --task-id task-login-flow-001 --model gpt-5
 agent-eval-contract normalize --harness swe-bench --file examples/swe_bench_result.json
+agent-eval-contract version   # package and contract versions, for CI/debugging
 ```
 
-The legacy `agent-eval-contract-fixtures` command still writes fixture bundles for one release.
+`validate` prints a friendly, field-oriented message on failure and exits non-zero; add `--json-errors` for raw structured errors. The legacy `agent-eval-contract-fixtures` command still writes fixture bundles for one release.
 
 ## What It Provides
 
