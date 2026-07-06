@@ -11,6 +11,8 @@
 
 `agent-eval-contract` defines, validates, serializes, exports JSON Schema for, and normalizes portable agent evaluation records.
 
+Releases are automated by `.github/workflows/release.yml` on a `v*` tag (build, twine check, fresh-venv CLI smoke, PyPI trusted publishing, GitHub release). See [docs/release-checklist.md](docs/release-checklist.md) for the manual steps around it.
+
 ## Release Checks
 
 CI runs the same quality ladder on pull requests and pushes. Run this local block before tagging or publishing:

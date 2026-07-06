@@ -66,9 +66,7 @@ def test_no_required_field_added_without_contract_bump() -> None:
         # frozen required-field set. Refresh the snapshot alongside the bump.
         return
 
-    frozen = json.loads(
-        (SNAPSHOT_DIR / "required_fields_v0_1.json").read_text(encoding="utf-8")
-    )
+    frozen = json.loads((SNAPSHOT_DIR / "required_fields_v0_1.json").read_text(encoding="utf-8"))
     current = {
         schema_id: sorted(model.model_json_schema().get("required", []))
         for schema_id, model in SCHEMA_MODELS.items()
