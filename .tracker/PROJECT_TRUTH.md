@@ -4,7 +4,7 @@ projectName: Agent Eval Contract
 summary: Public Pydantic contract package for portable agent evaluation records, validators, JSON Schema export, fixture bundles, and external harness normalization.
 healthScore: 94
 statusLabel: healthy
-nextStep: Cut 0.3.0 (bump pyproject/release_metadata version, move CHANGELOG Unreleased under the version, tag vX.Y.Z) once the release-readiness work is reviewed.
+nextStep: 0.3.0 is bumped, merged to main, and tagged v0.3.0. Push main and the tag to trigger the release workflow (PyPI trusted publishing + GitHub release), then smoke test the installed 0.3.0 from PyPI.
 blockers: []
 lastUpdated: 2026-07-05
 tags: [agent-eval, contract, eval, pydantic, python]
