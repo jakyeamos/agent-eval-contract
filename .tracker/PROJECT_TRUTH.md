@@ -1,20 +1,20 @@
 ---
 schemaVersion: 1
 projectName: Agent Eval Contract
-summary: Public Pydantic contract package for portable agent evaluation records, validators, JSON Schema export, fixture bundles, and external harness normalization.
+summary: Public Pydantic contract package for portable agent evaluation records, validators, JSON Schema export, fixture bundles, external harness normalization, and a lockfile-backed Quality Runner dependency-audit gate.
 healthScore: 94
 statusLabel: healthy
-nextStep: 0.3.0 is bumped, merged to main, and tagged v0.3.0. Push main and the tag to trigger the release workflow (PyPI trusted publishing + GitHub release), then smoke test the installed 0.3.0 from PyPI.
+nextStep: Review the Quality Runner dependency-audit result and resolve the remaining runner vulture-cache mismatch before merging this gate branch.
 blockers: []
-lastUpdated: 2026-07-05
+lastUpdated: 2026-07-13
 tags: [agent-eval, contract, eval, pydantic, python]
 areas: [engineering]
 goals: []
 repoType: library
 sourceOfTruth: mixed
 primaryLanguage: Python
-activeBranch: dev
-lastCommitDate: 2026-07-05
+activeBranch: codex/quality-runner-dependency-gate-agent-eval
+lastCommitDate: 2026-07-13
 quality:
   lint: pass
   types: pass
@@ -32,6 +32,12 @@ agentExpectationsVersion: 1
 ---
 
 ## Current State
+
+- The 2026-07-13 Quality Runner `0.5.0` dogfood run recorded 6 dangerous-sink
+  candidates and 12 total findings with no source-file changes. Commit
+  `0195c28` adds a lockfile-exported `pip-audit` gate; explicit verification
+  passed it with `No known vulnerabilities found`. The overall verification
+  remains blocked only by QR's vulture scan traversing its generated uv cache.
 
 Agent Eval Contract is now published on PyPI at version 0.2.0. It defines Pydantic models for eval tasks, runs, scores, failures, external results, normalized runs, and fixture bundle manifests. It includes runtime validators, JSON Schema export, bundled samples/templates, Terminal-Bench and SWE-bench normalization helpers, package metadata, docs, examples, and CI.
 
