@@ -1,93 +1,119 @@
 ---
 schemaVersion: 1
 projectName: Agent Eval Contract
-summary: Public Pydantic contract package for portable agent evaluation records, validators, JSON Schema export, fixture bundles, and external harness normalization.
-healthScore: 94
+summary: Agent Eval Contract has a 0.3.0 public-package candidate with canonical CLI root version/help compatibility and explicit publication blockers.
+healthScore: 96
 statusLabel: healthy
-nextStep: 0.3.0 is bumped, merged to main, and tagged v0.3.0. Push main and the tag to trigger the release workflow (PyPI trusted publishing + GitHub release), then smoke test the installed 0.3.0 from PyPI.
-blockers: []
-lastUpdated: 2026-07-05
+nextStep: Merge the isolated cleanup commit, finalize a release tag from the merged commit, run gh workflow run release.yml --ref <final-tag>, then verify the published package from PyPI.
+blockers:
+  - PyPI latest is 0.2.0; the 0.3.0 candidate is not published.
+  - Existing v0.3.0 points at the pre-cleanup commit; a final tag decision is required before publication.
+lastUpdated: 2026-07-17
 tags: [agent-eval, contract, eval, pydantic, python]
 areas: [engineering]
 goals: []
 repoType: library
 sourceOfTruth: mixed
 primaryLanguage: Python
-activeBranch: dev
-lastCommitDate: 2026-07-05
+activeBranch: codex/agent-eval-contract-command-surface-cleanup-20260717
+lastCommitDate: 2026-07-17
 quality:
   lint: pass
+  format: pass
   types: pass
   tests: pass
   deadCode: pass
-  structure: pass
+  build: pass
+  artifactMetadata: pass
+  packagedSmoke: pass
+  publication: pending
 canonicalCommands:
   install: uv sync --dev
-  dev: unknown
-  lint: uv run ruff check agent_eval_contract tests
-  typecheck: uv run basedpyright agent_eval_contract tests
+  lint: uv run ruff check agent_eval_contract tests scripts
+  format: uv run ruff format --check agent_eval_contract tests scripts
+  typecheck: uv run basedpyright agent_eval_contract tests scripts
   test: uv run pytest -q
-  deadcode: uv run --with vulture vulture agent_eval_contract tests --min-confidence 70
+  deadcode: uv run --with vulture vulture agent_eval_contract tests scripts --min-confidence 70
+  releaseCheck: uv run python scripts/check_release_metadata.py
+  build: uv build --out-dir /tmp/agent-eval-contract-dist
+  artifactCheck: uv run --with twine twine check /tmp/agent-eval-contract-dist/*
+  packagedSmoke: fresh venv agent-eval-contract --help/--version/version/validate/inspect/normalize/schemas/fixtures plus agent-eval-contract-fixtures
 agentExpectationsVersion: 1
 ---
 
 ## Current State
 
-Agent Eval Contract is now published on PyPI at version 0.2.0. It defines Pydantic models for eval tasks, runs, scores, failures, external results, normalized runs, and fixture bundle manifests. It includes runtime validators, JSON Schema export, bundled samples/templates, Terminal-Bench and SWE-bench normalization helpers, package metadata, docs, examples, and CI.
+The repository contains the 0.3.0 source candidate for the public
+`agent-eval-contract` package. PyPI still publishes 0.2.0, so release metadata
+is `public_package_candidate` with explicit blockers and no publication was
+performed. The canonical `agent-eval-contract` executable now supports root
+`--help` and `--version` alongside the existing `version` subcommand; the
+`agent-eval-contract-fixtures` compatibility executable remains available.
 
-The old internal extraction framing has been removed from the public core. Project-specific workflow vocabulary should live in `metadata` or a separate adapter package.
+The isolated cleanup worktree passed the 40-test suite, Ruff lint and format,
+basedpyright, vulture, source release metadata checks, wheel/sdist twine
+checks, and fresh-venv packaged CLI smoke checks.
 
 ## What Exists
 
-- `agent_eval_contract/models.py` for public Pydantic models and vocabulary.
-- `agent_eval_contract/validators.py` for runtime validation helpers returning typed model instances.
-- `agent_eval_contract/schema_export.py` for JSON Schema export.
-- `agent_eval_contract/external.py` for generic, Terminal-Bench, and SWE-bench normalization.
-- `agent_eval_contract/cli.py` for `fixtures`, `schemas`, `validate`, `inspect`, `normalize`, and `version` commands (validate supports `--quiet`/`--pretty`/`--json-errors` with friendly errors).
-- `agent_eval_contract/fixture_runner.py` for fixture bundle generation and the deprecated compatibility entrypoint.
-- `docs/contract.md`, `docs/field-reference.md`, `docs/adapters.md`, `docs/stability.md`, `docs/writing-adapters.md`, and `docs/release-checklist.md` for public package docs.
-- `SECURITY.md` for the security/supply-chain policy.
-- `examples/` with single-record samples plus three runnable workflows (`ci_pytest_eval/`, `swe_bench_normalization/`, `dashboard_ingest/`).
-- `tests/snapshots/` (committed schema snapshots + frozen contract-0.1 required fields) and `tests/fixtures/v0_2_0/` (frozen backward-compat fixtures).
-- `.github/workflows/ci.yml` (Python 3.12/3.13/3.14) and `.github/workflows/release.yml` (tag-triggered build, twine check, PyPI trusted publishing, GitHub release).
+- `agent_eval_contract/models.py`, `validators.py`, `schema_export.py`, and `external.py` provide the public contract models and helpers.
+- `agent_eval_contract/cli.py` provides `fixtures`, `schemas`, `validate`, `inspect`, `normalize`, `version`, root `--help`, and root `--version`.
+- `agent_eval_contract/fixture_runner.py` provides the fixture compatibility entrypoint.
+- `scripts/check_release_metadata.py` keeps package version, release metadata, and final tag names aligned.
+- `docs/release-checklist.md` and `RELEASE.md` document candidate state, checks, tagging, publication, and registry smoke.
+- `.github/workflows/ci.yml` and `.github/workflows/release.yml` run the metadata gate and packaged CLI smoke surfaces.
 
 ## What Does Not Exist Yet
 
+- The 0.3.0 package is not published to PyPI.
+- The final release tag has not been selected from the merged cleanup commit.
 - No long-term AIOS-specific adapter package exists in this repo.
 
 ## Next Step
 
-Monitor early install/use feedback and keep AIOS-specific vocabulary in a separate adapter package rather than the public core.
+Merge the isolated commit, decide the final tag, tag the merged release commit,
+run the documented workflow command, and verify the installed registry package.
 
 ## Quality Ladder Notes
 
-Checks run on 2026-07-04 after the 0.2.0 version bump:
+Checks run on 2026-07-17 in the isolated worktree:
 
 | Step | Status | Evidence |
 | --- | --- | --- |
-| Lint | Pass | `uv run ruff check agent_eval_contract tests` passed. |
-| Format | Pass | `uv run ruff format --check agent_eval_contract tests` passed. |
-| Type check | Pass | `uv run basedpyright agent_eval_contract tests` passed with 0 errors and 0 warnings. |
-| Tests | Pass | `uv run pytest -q` passed with 15 tests. |
-| Dead code | Pass | `uv run --with vulture vulture agent_eval_contract tests --min-confidence 70` reported no findings. |
-| Pre-CR | Pass | `uv run --with pytest python scripts/pre_cr_coverage.py` passed. |
-| Build | Pass | `uv build --out-dir /tmp/agent-eval-contract-dist` built `agent_eval_contract-0.2.0` wheel and sdist. |
-| Installed smoke | Pass | Installed the `0.2.0` wheel in a fresh venv, validated records, exported schemas, and normalized Terminal-Bench and SWE-bench examples. |
-| Publish | Pass | `uv publish` uploaded the `0.2.0` wheel and sdist to PyPI. |
-| Registry smoke | Pass | Installed `agent-eval-contract==0.2.0` from PyPI in a fresh venv, validated records, exported schemas, and normalized Terminal-Bench and SWE-bench examples. |
+| Ruff lint | Pass | `uv run ruff check agent_eval_contract tests scripts` |
+| Ruff format | Pass | `uv run ruff format --check agent_eval_contract tests scripts` |
+| Type check | Pass | `uv run basedpyright agent_eval_contract tests scripts` reported 0 errors, 0 warnings, 0 notes. |
+| Tests | Pass | `uv run pytest -q` passed 40 tests. |
+| Dead code | Pass | vulture at minimum confidence 70 reported no findings. |
+| Release metadata | Pass | Project version, bundled metadata, and `v0.3.0` tag name agree. |
+| Build | Pass | Built 0.3.0 wheel and sdist. |
+| Artifact metadata | Pass | twine check passed for both artifacts. |
+| Packaged smoke | Pass | Fresh venv covered canonical and compatibility executables plus all documented first-run commands. |
+| Publication | Hold | PyPI latest is 0.2.0; no publish command was run. |
 
-## Release-Readiness Work (2026-07-05)
+## Release Readiness Work (2026-07-17)
 
-Implemented a 17-item external review on branch `dev` for a 0.3.0-quality release: fixed the adapter docs/API mismatch, sharpened the README promise, added a stability policy, schema snapshot tests, backward-compat fixtures + contract guardrails, Python 3.14 CI, expanded CLI (`version`/`inspect`/`--quiet`/`--pretty`/friendly errors), real-world example workflows, adapter-authoring guide, non-Python (ajv) validation docs, `SECURITY.md`, and a trusted-publishing release workflow. Version is intentionally still `0.2.0`; the actual bump/tag/publish is left as a deliberate release step (see nextStep).
+Implemented the command-surface cleanup, added focused root help/version
+compatibility tests, made candidate/published release metadata states
+incompatible with contradictory blockers, added a version/tag metadata gate,
+expanded CI/release smoke coverage, and updated README/release documentation
+to distinguish the 0.3.0 candidate from the published 0.2.0 package.
 
-Full ladder on 2026-07-05: ruff lint pass, ruff format pass, basedpyright 0/0/0, pytest 37 passed, vulture clean, `uv build` + `twine check` both pass.
+The existing `v0.3.0` tag predates this cleanup. Do not run
+`gh workflow run release.yml --ref v0.3.0` until the final release tag points
+at the merged cleanup commit.
 
 ## Agent Notes
 
-Do not publish the public package as `0.1.0`: the existing `v0.1.0` tag points to the older extraction commit. Version `0.2.0` is the intended public release version.
+Do not publish the public package from the existing pre-cleanup tag. After the
+final tag decision and successful registry smoke, update release metadata to
+`published` with an empty blocker list in a follow-up truth update.
 
-The device commit gate shells out to the `pre-cr` CLI, which was broken (`@pre-cr/core@0.1.0` requires `typescript` but declares no such dependency). Repaired by symlinking the store's typescript package into `@pre-cr/core`'s node_modules; if it regresses after a pnpm prune/reinstall, re-create that symlink.
+The device commit gate shells out to the `pre-cr` CLI, which previously needed
+a local typescript-store symlink repair; preserve that workaround if the hook
+regresses after dependency pruning.
 
 ## QR Remediation Planning
 
-- 2026-07-04: Added GSD Phase 1 for QR remediation from qr-low-risk-post-branch-fix-20260704-agent-eval-contract; 1 plan(s) created from agent-eval-contract.md. Execution has not started.
+The older GSD QR remediation plan remains separate from this command-surface
+cleanup; no unrelated QR phase execution was started here.

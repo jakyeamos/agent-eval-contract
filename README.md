@@ -50,10 +50,10 @@ Do not use this if:
 ## Install
 
 ```bash
-pip install agent-eval-contract
+python -m pip install agent-eval-contract
 ```
 
-For local development from this repo:
+For the current checkout and its release-candidate CLI:
 
 ```bash
 uv sync --dev
@@ -82,21 +82,24 @@ print(run.model_dump(mode="json"))
 
 Validation returns typed Pydantic model instances. Invalid records raise `pydantic.ValidationError` with structured field errors.
 
-## CLI
+## CLI first run
+
+The first-run examples below use the current checkout. After installing a
+release that contains these commands, remove the `uv run` prefix.
 
 ```bash
-agent-eval-contract validate --kind run --file examples/eval_run.json
-agent-eval-contract validate --kind run --file examples/eval_run.json --quiet   # exit code only
-agent-eval-contract validate --kind run --file examples/eval_run.json --pretty  # indented JSON
-agent-eval-contract inspect --file examples/eval_run.json   # report which models the file matches
-agent-eval-contract schemas --output-dir /tmp/agent-eval-contract-schemas
-agent-eval-contract fixtures --output-dir /tmp/agent-eval-contract-fixtures
-agent-eval-contract normalize --harness terminal-bench --file examples/terminal_bench_result.json --task-id task-login-flow-001 --model gpt-5
-agent-eval-contract normalize --harness swe-bench --file examples/swe_bench_result.json
-agent-eval-contract version   # package and contract versions, for CI/debugging
+uv run agent-eval-contract --help
+uv run agent-eval-contract --version
+uv run agent-eval-contract version
+uv run agent-eval-contract validate --kind run --file examples/eval_run.json
+uv run agent-eval-contract inspect --file examples/eval_run.json
+uv run agent-eval-contract normalize --harness terminal-bench --file examples/terminal_bench_result.json --task-id task-login-flow-001 --model gpt-5
+uv run agent-eval-contract normalize --harness swe-bench --file examples/swe_bench_result.json
+uv run agent-eval-contract schemas --output-dir /tmp/agent-eval-contract-schemas
+uv run agent-eval-contract fixtures --output-dir /tmp/agent-eval-contract-fixtures
 ```
 
-`validate` prints a friendly, field-oriented message on failure and exits non-zero; add `--json-errors` for raw structured errors. The legacy `agent-eval-contract-fixtures` command still writes fixture bundles for one release.
+`agent-eval-contract` is the canonical executable. The `version` subcommand remains supported alongside root `--version`, and both print the same package and contract versions. `validate` prints a friendly, field-oriented message on failure and exits non-zero; add `--quiet`, `--pretty`, or `--json-errors` for alternate output. The legacy `agent-eval-contract-fixtures` executable remains available for existing automation.
 
 ## What It Provides
 
@@ -105,7 +108,7 @@ agent-eval-contract version   # package and contract versions, for CI/debugging
 - JSON Schema export for all public models
 - bundled sample records and markdown templates
 - Terminal-Bench and SWE-bench oriented normalization helpers
-- a small CLI for validation, schema export, fixture generation, and normalization
+- a small CLI for validation, inspection, schema export, fixture generation, normalization, and version reporting
 
 ## Contract Vocabulary
 
@@ -133,9 +136,9 @@ See [SECURITY.md](SECURITY.md) for how to report vulnerabilities and the package
 ## Development
 
 ```bash
-uv run ruff check agent_eval_contract tests
-uv run ruff format --check agent_eval_contract tests
-uv run basedpyright agent_eval_contract tests
+uv run ruff check agent_eval_contract tests scripts
+uv run ruff format --check agent_eval_contract tests scripts
+uv run basedpyright agent_eval_contract tests scripts
 uv run pytest -q
 uv build --out-dir /tmp/agent-eval-contract-dist
 ```

@@ -45,6 +45,18 @@ _INSPECT_MODELS: dict[str, type[BaseModel]] = {
 }
 
 
+class _VersionAction(argparse.Action):
+    def __call__(
+        self,
+        parser: argparse.ArgumentParser,
+        _namespace: argparse.Namespace,
+        _values: object | None,
+        _option_string: str | None = None,
+    ) -> None:
+        print(_version_output())
+        parser.exit()
+
+
 def _load_json(path: Path) -> dict[str, Any]:
     loaded = json.loads(path.expanduser().resolve().read_text(encoding="utf-8"))
     if not isinstance(loaded, dict):
@@ -130,14 +142,22 @@ def _run_normalize(args: argparse.Namespace) -> int:
     return 0
 
 
-def _run_version(_args: argparse.Namespace) -> int:
+def _version_output() -> str:
     release_metadata = load_release_metadata()
     try:
         package_version = metadata.version("agent-eval-contract")
     except metadata.PackageNotFoundError:
         package_version = str(release_metadata["version"])
-    print(f"package: {package_version}")
-    print(f"contract: {release_metadata['contract_version']}")
+    return "\n".join(
+        (
+            f"package: {package_version}",
+            f"contract: {release_metadata['contract_version']}",
+        )
+    )
+
+
+def _run_version(_args: argparse.Namespace) -> int:
+    print(_version_output())
     return 0
 
 
@@ -152,6 +172,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="agent-eval-contract",
         description="Validate, normalize, and export portable agent evaluation contracts.",
+    )
+    parser.add_argument(
+        "--version",
+        action=_VersionAction,
+        nargs=0,
+        help="Print package and contract versions and exit.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
