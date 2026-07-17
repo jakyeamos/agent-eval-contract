@@ -39,6 +39,7 @@ evidence-backed release and CLI changes.
 
 - 2026-07-17: PyPI metadata verified at 0.2.0; repository source candidate is 0.3.0 and existing `v0.3.0` predates this cleanup.
 - 2026-07-17: Fresh wheel smoke covered `--help`, `--version`, `version`, `validate`, `inspect`, both normalizers, `schemas`, `fixtures`, and the compatibility executable.
+- 2026-07-17: Implementation committed as `add1e1d1d2b4cc5499919ca0b9089fb7097f457a`; this truth snapshot is the required follow-up.
 
 ## Next Command
 

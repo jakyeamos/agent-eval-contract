@@ -17,6 +17,7 @@ sourceOfTruth: mixed
 primaryLanguage: Python
 activeBranch: codex/agent-eval-contract-command-surface-cleanup-20260717
 lastCommitDate: 2026-07-17
+lastImplementationCommit: add1e1d1d2b4cc5499919ca0b9089fb7097f457a
 quality:
   lint: pass
   format: pass
@@ -53,6 +54,9 @@ performed. The canonical `agent-eval-contract` executable now supports root
 The isolated cleanup worktree passed the 40-test suite, Ruff lint and format,
 basedpyright, vulture, source release metadata checks, wheel/sdist twine
 checks, and fresh-venv packaged CLI smoke checks.
+
+The implementation is committed as `add1e1d1d2b4cc5499919ca0b9089fb7097f457a`
+on the isolated feature branch.
 
 ## What Exists
 
