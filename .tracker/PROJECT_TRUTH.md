@@ -4,17 +4,17 @@ projectName: Agent Eval Contract
 summary: Public Pydantic contract package for portable agent evaluation records, validators, JSON Schema export, fixture bundles, external harness normalization, and a lockfile-backed Quality Runner dependency-audit gate.
 healthScore: 94
 statusLabel: healthy
-nextStep: Review the Quality Runner dependency-audit result and resolve the remaining runner vulture-cache mismatch before merging this gate branch.
+nextStep: Reconcile the 0.3.0 release metadata with the live PyPI 0.2.0 artifact before publishing.
 blockers: []
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-22
 tags: [agent-eval, contract, eval, pydantic, python]
 areas: [engineering]
 goals: []
 repoType: library
 sourceOfTruth: mixed
 primaryLanguage: Python
-activeBranch: codex/quality-runner-dependency-gate-agent-eval
-lastCommitDate: 2026-07-13
+activeBranch: codex/full-audit-fold-agent-eval-contract
+lastCommitDate: 2026-07-22
 quality:
   lint: pass
   types: pass
@@ -33,11 +33,12 @@ agentExpectationsVersion: 1
 
 ## Current State
 
-- The 2026-07-13 Quality Runner `0.5.0` dogfood run recorded 6 dangerous-sink
-  candidates and 12 total findings with no source-file changes. Commit
-  `0195c28` adds a lockfile-exported `pip-audit` gate; explicit verification
-  passed it with `No known vulnerabilities found`. The overall verification
-  remains blocked only by QR's vulture scan traversing its generated uv cache.
+- The Quality Runner dependency-audit gate is folded into the integration
+  branch. The merged source commits are `0195c28` and `3ac543c`.
+- The 0.3.0 integration worktree passed Ruff lint and format checks,
+  BasedPyright, 37 pytest tests, Vulture, `uv build`, and `twine check` for
+  both artifacts. The live PyPI artifact remains 0.2.0 until the release gate
+  is independently reconciled.
 
 Agent Eval Contract is now published on PyPI at version 0.2.0. It defines Pydantic models for eval tasks, runs, scores, failures, external results, normalized runs, and fixture bundle manifests. It includes runtime validators, JSON Schema export, bundled samples/templates, Terminal-Bench and SWE-bench normalization helpers, package metadata, docs, examples, and CI.
 
