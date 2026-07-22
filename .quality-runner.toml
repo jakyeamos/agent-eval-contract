@@ -1,0 +1,8 @@
+[[quality_runner.gates]]
+id = "security_dependency_audit"
+command = "uv export --frozen --format requirements.txt --no-dev --no-emit-project | uv run --with pip-audit pip-audit -r /dev/stdin --strict --disable-pip --no-deps"
+ecosystem = "python"
+source = "uv.lock"
+owner = "platform"
+required = true
+severity = "blocker"
