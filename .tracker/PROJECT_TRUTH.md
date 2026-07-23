@@ -6,7 +6,7 @@ healthScore: 94
 statusLabel: healthy
 nextStep: Review the Quality Runner dependency-audit result and resolve the remaining runner vulture-cache mismatch before merging this gate branch.
 blockers: []
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-22
 tags: [agent-eval, contract, eval, pydantic, python]
 areas: [engineering]
 goals: []
@@ -33,6 +33,9 @@ agentExpectationsVersion: 1
 
 ## Current State
 
+- The repository environment contract now has a minimal root agent router and
+  `.agents/context/README.md` index for contract, adapter, compatibility,
+  release, security, and quality routing.
 - The 2026-07-13 Quality Runner `0.5.0` dogfood run recorded 6 dangerous-sink
   candidates and 12 total findings with no source-file changes. Commit
   `0195c28` adds a lockfile-exported `pip-audit` gate; explicit verification
