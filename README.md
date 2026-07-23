@@ -10,6 +10,14 @@ Pydantic contracts and JSON Schemas for portable agent evaluation records.
 
 Use this package when you are experimenting with agents, harnesses, CI checks, or benchmark runners and need a stable record shape for tasks, runs, scores, failures, and normalized external results.
 
+## Release status
+
+This source checkout targets `v0.3.0`. PyPI currently publishes `v0.2.0`; the
+existing `v0.3.0` tag has passed the local package and consumer gates, but its
+GitHub release and PyPI publication are still pending trusted-publisher
+configuration. `pip install agent-eval-contract` therefore resolves the
+verified `v0.2.0` registry release until that workflow succeeds.
+
 ## What this is
 
 A small contract layer for agent evaluation records:

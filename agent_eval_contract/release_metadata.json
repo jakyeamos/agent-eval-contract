@@ -2,7 +2,7 @@
   "package_name": "agent-eval-contract",
   "version": "0.3.0",
   "contract_version": "0.1",
-  "status": "published",
+  "status": "public_package_candidate",
   "python_requires": ">=3.12",
   "public_promise": "Define, validate, serialize, export JSON Schema for, and normalize portable agent evaluation records.",
   "public_surfaces": [

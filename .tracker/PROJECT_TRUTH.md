@@ -1,11 +1,12 @@
 ---
 schemaVersion: 1
 projectName: Agent Eval Contract
-summary: Public Pydantic contract package for portable agent evaluation records, validators, JSON Schema export, fixture bundles, external harness normalization, and a lockfile-backed Quality Runner dependency-audit gate.
+summary: Public Pydantic contract package with a fully verified v0.3.0 release candidate on canonical dev; the existing tag passed local and consumer gates, while PyPI/GitHub publication is blocked by missing trusted-publisher registration.
 healthScore: 94
 statusLabel: healthy
-nextStep: Reconcile the 0.3.0 release metadata with the live PyPI 0.2.0 artifact before publishing.
-blockers: []
+nextStep: Register the PyPI trusted publisher for the tagged release workflow, rerun v0.3.0, then verify the GitHub release and PyPI consumer smoke.
+blockers:
+  - Tagged workflow run 28763420328 failed with PyPI invalid-publisher because the `pypi` trusted publisher is not registered for `jakyeamos/agent-eval-contract` and `release.yml`.
 lastUpdated: 2026-07-22
 tags: [agent-eval, contract, eval, pydantic, python]
 areas: [engineering]
@@ -13,7 +14,7 @@ goals: []
 repoType: library
 sourceOfTruth: mixed
 primaryLanguage: Python
-activeBranch: codex/full-audit-fold-agent-eval-contract
+activeBranch: dev
 lastCommitDate: 2026-07-22
 quality:
   lint: pass
@@ -37,8 +38,9 @@ agentExpectationsVersion: 1
   branch. The merged source commits are `0195c28` and `3ac543c`.
 - The 0.3.0 integration worktree passed Ruff lint and format checks,
   BasedPyright, 37 pytest tests, Vulture, `uv build`, and `twine check` for
-  both artifacts. The live PyPI artifact remains 0.2.0 until the release gate
-  is independently reconciled.
+  both artifacts. The existing immutable `v0.3.0` tag contains the same package
+  surface as current `dev`; the live PyPI artifact remains 0.2.0 until the
+  trusted-publisher gate is configured and rerun.
 
 Agent Eval Contract is now published on PyPI at version 0.2.0. It defines Pydantic models for eval tasks, runs, scores, failures, external results, normalized runs, and fixture bundle manifests. It includes runtime validators, JSON Schema export, bundled samples/templates, Terminal-Bench and SWE-bench normalization helpers, package metadata, docs, examples, and CI.
 

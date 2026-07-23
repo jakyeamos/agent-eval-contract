@@ -4,7 +4,7 @@
 
 - Version: `0.3.0`
 - Contract version: `0.1`
-- Status: public package release
+- Status: public package candidate; PyPI currently publishes `0.2.0`
 - Source package: `agent_eval_contract`
 
 ## Public Promise
