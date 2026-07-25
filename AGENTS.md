@@ -17,3 +17,8 @@ Read this router and `.agents/context/README.md` before repository work.
 - A change is done when contract tests, lint, format, type, dead-code, and the
   relevant build/release checks pass and the public documentation matches the
   exported schema.
+
+The routed environment contract is executable through
+`scripts/check_environment_contract.py` and required by `.pre-cr.json`.
+Always-loaded content remains limited to hard boundaries and routing pointers;
+load the smallest linked context packet that matches the task.

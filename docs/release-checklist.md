@@ -12,11 +12,13 @@ which runs on a `v*` tag. This checklist covers the manual steps around it.
 
 ## Verify locally
 
-- [ ] `uv run ruff check agent_eval_contract tests`
-- [ ] `uv run ruff format --check agent_eval_contract tests`
-- [ ] `uv run basedpyright agent_eval_contract tests`
+- [ ] `uv run ruff check agent_eval_contract scripts tests`
+- [ ] `uv run ruff format --check agent_eval_contract scripts tests`
+- [ ] `uv run basedpyright agent_eval_contract scripts tests`
 - [ ] `uv run pytest -q` (includes schema snapshot and backward-compatibility tests)
+- [ ] `uv run --with vulture vulture agent_eval_contract scripts tests --min-confidence 70`
 - [ ] `uv build --out-dir /tmp/agent-eval-contract-dist`
+- [ ] `python3 scripts/check_environment_contract.py`
 - [ ] `uv run --with twine twine check /tmp/agent-eval-contract-dist/*`
 - [ ] Install the wheel in a fresh venv and run the CLI smoke tests (`validate`, `schemas`, `normalize`, `version`)
 

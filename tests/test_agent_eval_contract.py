@@ -183,7 +183,9 @@ def test_bundled_samples_and_release_metadata_validate() -> None:
     validate_release_metadata(metadata)
 
     assert metadata["package_name"] == "agent-eval-contract"
-    assert "Pydantic evaluation record models" in metadata["public_surfaces"]
+    public_surfaces = metadata["public_surfaces"]
+    assert isinstance(public_surfaces, list)
+    assert "Pydantic evaluation record models" in cast(list[object], public_surfaces)
     assert metadata["release_blockers"] == []
 
 
@@ -222,7 +224,9 @@ def test_fixture_bundle_writer_produces_public_artifacts(tmp_path: Path) -> None
     assert (tmp_path / "samples" / "eval_task.json").exists()
     assert (tmp_path / "templates" / "major-task-eval.md").exists()
     assert (tmp_path / "schemas" / "eval_run.schema.json").exists()
-    assert result["metadata"]["public_surfaces"]
+    result_metadata = result["metadata"]
+    assert isinstance(result_metadata, dict)
+    assert result_metadata["public_surfaces"]
 
 
 def test_main_cli_subcommands_work(tmp_path: Path) -> None:
@@ -359,6 +363,6 @@ def test_deprecated_fixture_runner_cli_still_works(tmp_path: Path) -> None:
 
 
 def load_json_example(name: str) -> dict[str, JsonValue]:
-    loaded = json.loads((ROOT / "examples" / name).read_text(encoding="utf-8"))
+    loaded = cast(object, json.loads((ROOT / "examples" / name).read_text(encoding="utf-8")))
     assert isinstance(loaded, dict)
-    return loaded
+    return cast(dict[str, JsonValue], loaded)

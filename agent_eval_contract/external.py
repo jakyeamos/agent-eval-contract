@@ -1,44 +1,47 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any
+from typing import cast
 
 from .models import ExternalHarness, FinalStatus, JsonValue, NormalizedRun
 
 
-def _as_mapping(value: object) -> Mapping[str, Any]:
+def _as_mapping(value: object) -> Mapping[str, object]:
     if isinstance(value, Mapping):
-        return value
+        candidate = cast(Mapping[object, object], value)
+        if all(isinstance(key, str) for key in candidate):
+            return cast(Mapping[str, object], candidate)
     raise TypeError("external result must be a mapping")
 
 
 def _string_list(value: object) -> list[str]:
     if isinstance(value, list):
-        return [str(item) for item in value]
+        return [str(item) for item in cast(list[object], value)]
     if isinstance(value, tuple):
-        return [str(item) for item in value]
+        return [str(item) for item in cast(tuple[object, ...], value)]
     return []
 
 
-def _json_metadata(data: Mapping[str, Any]) -> dict[str, JsonValue]:
-    return {
-        str(key): value
-        for key, value in data.items()
-        if isinstance(key, str) and _is_json_value(value)
-    }
+def _json_metadata(data: Mapping[str, object]) -> dict[str, JsonValue]:
+    metadata: dict[str, JsonValue] = {}
+    for key, value in data.items():
+        if _is_json_value(value):
+            metadata[str(key)] = cast(JsonValue, value)
+    return metadata
 
 
 def _is_json_value(value: object) -> bool:
     if value is None or isinstance(value, str | int | float | bool):
         return True
     if isinstance(value, list):
-        return all(_is_json_value(item) for item in value)
+        return all(_is_json_value(item) for item in cast(list[object], value))
     if isinstance(value, dict):
-        return all(isinstance(key, str) and _is_json_value(item) for key, item in value.items())
+        candidate = cast(dict[object, object], value)
+        return all(isinstance(key, str) and _is_json_value(item) for key, item in candidate.items())
     return False
 
 
-def _passed_status(data: Mapping[str, Any]) -> FinalStatus:
+def _passed_status(data: Mapping[str, object]) -> FinalStatus:
     passed_value = data.get("passed", data.get("success", data.get("resolved")))
     if passed_value is None:
         status = data.get("status")
@@ -54,9 +57,11 @@ def _passed_status(data: Mapping[str, Any]) -> FinalStatus:
     return "success" if bool(passed_value) else "failed"
 
 
-def _score(data: Mapping[str, Any]) -> float | None:
+def _score(data: Mapping[str, object]) -> float | None:
     value = data.get("score")
     if value is None:
+        return None
+    if not isinstance(value, str | int | float):
         return None
     try:
         numeric = float(value)
@@ -69,23 +74,27 @@ def _score(data: Mapping[str, Any]) -> float | None:
     return None
 
 
-def _duration_ms(data: Mapping[str, Any]) -> int | None:
+def _duration_ms(data: Mapping[str, object]) -> int | None:
     value = data.get("duration_ms")
     if value is None:
         seconds = data.get("duration_seconds", data.get("elapsed_seconds"))
         if seconds is None:
             return None
+        if not isinstance(seconds, str | int | float):
+            return None
         try:
             return int(float(seconds) * 1000)
         except (TypeError, ValueError):
             return None
+    if not isinstance(value, str | int | float):
+        return None
     try:
         return int(value)
     except (TypeError, ValueError):
         return None
 
 
-def _terminal_checks(data: Mapping[str, Any]) -> list[str]:
+def _terminal_checks(data: Mapping[str, object]) -> list[str]:
     checks = data.get("tests_run", data.get("checks"))
     if checks is not None:
         return _string_list(checks)
@@ -93,7 +102,7 @@ def _terminal_checks(data: Mapping[str, Any]) -> list[str]:
     return [str(command)] if command else []
 
 
-def _swe_bench_checks(data: Mapping[str, Any]) -> list[str]:
+def _swe_bench_checks(data: Mapping[str, object]) -> list[str]:
     checks = _string_list(data.get("tests_run", data.get("checks", [])))
     if checks:
         return checks
@@ -102,31 +111,46 @@ def _swe_bench_checks(data: Mapping[str, Any]) -> list[str]:
     return [*fail_to_pass, *pass_to_pass]
 
 
-def to_swe_bench_format(eval_task: Mapping[str, Any]) -> dict[str, Any]:
+def _as_int(value: object, default: int) -> int:
+    if not isinstance(value, str | int | float):
+        return default
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _as_json_value(value: object) -> JsonValue:
+    if not _is_json_value(value):
+        raise TypeError("external result contains a non-JSON value")
+    return cast(JsonValue, value)
+
+
+def to_swe_bench_format(eval_task: Mapping[str, object]) -> dict[str, JsonValue]:
     task = _as_mapping(eval_task)
     return {
-        "repo": task.get("repo"),
-        "instance_id": task.get("task_id"),
-        "problem_statement": task.get("description"),
-        "base_commit": task.get("start_revision"),
-        "FAIL_TO_PASS": task.get("fail_to_pass", []),
-        "PASS_TO_PASS": task.get("pass_to_pass", []),
+        "repo": _as_json_value(task.get("repo")),
+        "instance_id": _as_json_value(task.get("task_id")),
+        "problem_statement": _as_json_value(task.get("description")),
+        "base_commit": _as_json_value(task.get("start_revision")),
+        "FAIL_TO_PASS": _as_json_value(task.get("fail_to_pass", [])),
+        "PASS_TO_PASS": _as_json_value(task.get("pass_to_pass", [])),
     }
 
 
-def to_terminal_bench_format(eval_task: Mapping[str, Any]) -> dict[str, Any]:
+def to_terminal_bench_format(eval_task: Mapping[str, object]) -> dict[str, JsonValue]:
     task = _as_mapping(eval_task)
     return {
-        "task_id": task.get("task_id"),
-        "command": task.get("command", "pytest"),
-        "expected_exit_code": int(task.get("expected_exit_code", 0)),
-        "setup_commands": task.get("setup_commands", []),
-        "timeout_seconds": int(task.get("timeout_seconds", 600)),
+        "task_id": _as_json_value(task.get("task_id")),
+        "command": _as_json_value(task.get("command", "pytest")),
+        "expected_exit_code": _as_int(task.get("expected_exit_code", 0), 0),
+        "setup_commands": _as_json_value(task.get("setup_commands", [])),
+        "timeout_seconds": _as_int(task.get("timeout_seconds", 600), 600),
     }
 
 
 def normalize_external_result(
-    external_result: Mapping[str, Any],
+    external_result: Mapping[str, object],
     *,
     eval_task_id: str | None = None,
     harness: ExternalHarness | str,
@@ -166,7 +190,7 @@ def normalize_external_result(
 
 
 def normalize_terminal_bench_result(
-    external_result: Mapping[str, Any],
+    external_result: Mapping[str, object],
     *,
     eval_task_id: str | None = None,
     model: str | None = None,
@@ -191,7 +215,7 @@ def normalize_terminal_bench_result(
 
 
 def normalize_swe_bench_result(
-    external_result: Mapping[str, Any],
+    external_result: Mapping[str, object],
     *,
     eval_task_id: str | None = None,
     model: str | None = None,

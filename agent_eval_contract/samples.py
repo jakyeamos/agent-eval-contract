@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import cast
 
 from .external import normalize_external_result
+from .models import JsonValue
 from .validators import (
     validate_eval_failure,
     validate_eval_run,
@@ -22,18 +23,18 @@ SAMPLE_FILES = {
 }
 
 
-def load_sample(sample_id: str, *, sample_root: Path = SAMPLE_ROOT) -> dict[str, Any]:
+def load_sample(sample_id: str, *, sample_root: Path = SAMPLE_ROOT) -> dict[str, JsonValue]:
     filename = SAMPLE_FILES.get(sample_id)
     if filename is None:
         allowed = ", ".join(sorted(SAMPLE_FILES))
         raise ValueError(f"Unknown agent eval sample '{sample_id}'. Use one of: {allowed}.")
-    loaded = json.loads((sample_root / filename).read_text(encoding="utf-8"))
+    loaded = cast(object, json.loads((sample_root / filename).read_text(encoding="utf-8")))
     if not isinstance(loaded, dict):
         raise ValueError(f"Agent eval sample '{sample_id}' must be a JSON object.")
-    return loaded
+    return cast(dict[str, JsonValue], loaded)
 
 
-def validate_sample(sample_id: str, sample: dict[str, Any]) -> None:
+def validate_sample(sample_id: str, sample: dict[str, JsonValue]) -> None:
     if sample_id == "eval_task":
         validate_eval_task(sample)
         return
@@ -61,7 +62,7 @@ def validate_all_samples(*, sample_root: Path = SAMPLE_ROOT) -> list[str]:
     return validated
 
 
-def _validate_external_result_normalization(sample: dict[str, Any]) -> None:
+def _validate_external_result_normalization(sample: dict[str, JsonValue]) -> None:
     external_result = sample.get("external_result")
     request = sample.get("request")
     expected = sample.get("expected_normalized")

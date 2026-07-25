@@ -133,9 +133,11 @@ See [SECURITY.md](SECURITY.md) for how to report vulnerabilities and the package
 ## Development
 
 ```bash
-uv run ruff check agent_eval_contract tests
-uv run ruff format --check agent_eval_contract tests
-uv run basedpyright agent_eval_contract tests
+uv run ruff check agent_eval_contract scripts tests
+uv run ruff format --check agent_eval_contract scripts tests
+uv run basedpyright agent_eval_contract scripts tests
 uv run pytest -q
+uv run --with vulture vulture agent_eval_contract scripts tests --min-confidence 70
 uv build --out-dir /tmp/agent-eval-contract-dist
+python3 scripts/check_environment_contract.py
 ```
