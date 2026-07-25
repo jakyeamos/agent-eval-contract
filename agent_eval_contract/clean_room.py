@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
+from .models import JsonValue
 from .samples import validate_all_samples
 from .templates import validate_template_directory
 
@@ -11,7 +11,7 @@ def run_clean_room_contract_check(
     *,
     template_root: Path,
     sample_root: Path | None = None,
-) -> dict[str, Any]:
+) -> dict[str, JsonValue]:
     templates = validate_template_directory(template_root)
     samples = (
         validate_all_samples()
@@ -22,6 +22,6 @@ def run_clean_room_contract_check(
         "ok": True,
         "template_count": len(templates),
         "sample_count": len(samples),
-        "templates": templates,
-        "samples": samples,
+        "templates": list(templates),
+        "samples": list(samples),
     }

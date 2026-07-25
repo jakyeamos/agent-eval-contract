@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Any
+from typing import cast
+
+from .models import JsonValue
 
 RELEASE_METADATA_PATH = Path(__file__).resolve().parent / "release_metadata.json"
 REQUIRED_RELEASE_METADATA_KEYS = (
@@ -19,15 +22,16 @@ REQUIRED_RELEASE_METADATA_KEYS = (
 )
 
 
-def load_release_metadata(path: Path = RELEASE_METADATA_PATH) -> dict[str, Any]:
-    loaded = json.loads(path.read_text(encoding="utf-8"))
+def load_release_metadata(path: Path = RELEASE_METADATA_PATH) -> dict[str, JsonValue]:
+    loaded = cast(object, json.loads(path.read_text(encoding="utf-8")))
     if not isinstance(loaded, dict):
         raise ValueError("Agent eval release metadata must be a JSON object.")
-    validate_release_metadata(loaded)
-    return loaded
+    metadata = cast(dict[str, JsonValue], loaded)
+    validate_release_metadata(metadata)
+    return metadata
 
 
-def validate_release_metadata(metadata: dict[str, Any]) -> None:
+def validate_release_metadata(metadata: Mapping[str, JsonValue]) -> None:
     missing = [key for key in REQUIRED_RELEASE_METADATA_KEYS if key not in metadata]
     if missing:
         raise ValueError(f"Agent eval release metadata is missing keys: {', '.join(missing)}")

@@ -61,9 +61,9 @@ ignore = ["E501"]
 [tool.basedpyright]
 pythonVersion = "3.12"
 include = ["agent_eval_contract", "scripts", "tests"]
-typeCheckingMode = "standard"
-reportMissingImports = "warning"
-reportMissingModuleSource = "none"
+typeCheckingMode = "strict"
+reportMissingImports = "error"
+reportMissingModuleSource = "error"
 
 [dependency-groups]
 dev = [
