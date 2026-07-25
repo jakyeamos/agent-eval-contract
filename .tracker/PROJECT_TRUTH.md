@@ -2,11 +2,11 @@
 schemaVersion: 1
 projectName: Agent Eval Contract
 summary: Public Pydantic contract package for portable agent evaluation records, validators, JSON Schema export, fixture bundles, external harness normalization, and a lockfile-backed Quality Runner dependency-audit gate.
-healthScore: 94
+healthScore: 96
 statusLabel: healthy
-nextStep: Review the Quality Runner dependency-audit result and resolve the remaining runner vulture-cache mismatch before merging this gate branch.
+nextStep: Run the protected disposable-worktree environment audit, then record the resulting evidence and resolve any repository-specific findings before moving to the next target.
 blockers: []
-lastUpdated: 2026-07-22
+lastUpdated: 2026-07-25
 tags: [agent-eval, contract, eval, pydantic, python]
 areas: [engineering]
 goals: []
@@ -14,7 +14,7 @@ repoType: library
 sourceOfTruth: mixed
 primaryLanguage: Python
 activeBranch: codex/quality-runner-dependency-gate-agent-eval
-lastCommitDate: 2026-07-13
+lastCommitDate: 2026-07-25
 quality:
   lint: pass
   types: pass
@@ -24,18 +24,25 @@ quality:
 canonicalCommands:
   install: uv sync --dev
   dev: unknown
-  lint: uv run ruff check agent_eval_contract tests
-  typecheck: uv run basedpyright agent_eval_contract tests
+  lint: uv run ruff check agent_eval_contract scripts tests
+  typecheck: uv run basedpyright agent_eval_contract scripts tests
   test: uv run pytest -q
-  deadcode: uv run --with vulture vulture agent_eval_contract tests --min-confidence 70
+  deadcode: uv run --with vulture vulture agent_eval_contract scripts tests --min-confidence 70
 agentExpectationsVersion: 1
 ---
 
 ## Current State
 
-- The repository environment contract now has a minimal root agent router and
-  `.agents/context/README.md` index for contract, adapter, compatibility,
-  release, security, and quality routing.
+- Commit `d6d54df` establishes the repository environment contract: a minimal
+  root agent router, an executable `.agents/context/README.md` index, and eight
+  linked packets for architecture, commands, conventions, security, failure
+  modes, examples, done criteria, and deployment/rollback.
+- `scripts/check_environment_contract.py` validates packet completeness,
+  freshness, links, strict type checking, exact quality commands, required
+  Pre-CR coverage, ignore rules, and tracked secret-like paths. It is required
+  by `.pre-cr.json` and passed against the 2026-07-25 tree.
+- The strict type-checking repair replaced untyped JSON boundaries with typed
+  values and explicit narrowing; production code has no `Any` usage.
 - The 2026-07-13 Quality Runner `0.5.0` dogfood run recorded 6 dangerous-sink
   candidates and 12 total findings with no source-file changes. Commit
   `0195c28` adds a lockfile-exported `pip-audit` gate; explicit verification
@@ -66,9 +73,26 @@ The old internal extraction framing has been removed from the public core. Proje
 
 ## Next Step
 
-Monitor early install/use feedback and keep AIOS-specific vocabulary in a separate adapter package rather than the public core.
+Run the leverage environment audit against the protected disposable baseline,
+record its replayable evidence, and address any findings revealed by dynamic
+command execution. Keep AIOS-specific vocabulary in a separate adapter package
+rather than the public core.
 
 ## Quality Ladder Notes
+
+Checks run on 2026-07-25 after the environment-legibility and strictness slice:
+
+| Step | Status | Evidence |
+| --- | --- | --- |
+| Lint | Pass | `uv run ruff check agent_eval_contract scripts tests` passed. |
+| Format | Pass | `uv run ruff format --check agent_eval_contract scripts tests` passed. |
+| Type check | Pass | Strict `uv run basedpyright agent_eval_contract scripts tests` passed with 0 errors, warnings, and notes. |
+| Tests | Pass | `uv run pytest -q` passed with 40 tests. |
+| Dead code | Pass | Vulture at 70% confidence reported no findings. |
+| Environment contract | Pass | `python3 scripts/check_environment_contract.py --as-of 2026-07-25` passed with all 8 packets and 7 quality commands. |
+| Pre-CR | Pass | The commit gate and `scripts/pre_cr_coverage.py` passed. |
+| Build | Pass | `uv build` produced the 0.3.0 wheel and source distribution. |
+| Package metadata | Pass | Twine checked both local artifacts successfully. |
 
 Checks run on 2026-07-04 after the 0.2.0 version bump:
 
