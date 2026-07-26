@@ -20,7 +20,7 @@ TEMPLATE_SECTIONS: dict[str, tuple[str, ...]] = {
         "Failure Types",
         "Summary",
         "Priority",
-        "Standards or Project Truth Update Needed",
+        "Standards or Project Notes Update Needed",
     ),
     "shadow-branch-comparison": (
         "Branches",
