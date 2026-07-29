@@ -36,19 +36,22 @@ jobs:
         run: uv sync --dev
 
       - name: Ruff lint
-        run: uv run ruff check agent_eval_contract tests
+        run: uv run ruff check agent_eval_contract scripts tests
 
       - name: Ruff format check
-        run: uv run ruff format --check agent_eval_contract tests
+        run: uv run ruff format --check agent_eval_contract scripts tests
 
       - name: Type check
-        run: uv run basedpyright agent_eval_contract tests
+        run: uv run basedpyright agent_eval_contract scripts tests
 
       - name: Tests
         run: uv run pytest -q
 
       - name: Dead code scan
-        run: uv run --with vulture vulture agent_eval_contract tests --min-confidence 70
+        run: uv run --with vulture vulture agent_eval_contract scripts tests --min-confidence 70
+
+      - name: Environment contract
+        run: python3 scripts/check_environment_contract.py
 
       - name: Build package
         run: uv build --out-dir dist
