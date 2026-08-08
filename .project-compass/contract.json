@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "revision": 1,
+  "project": {
+    "name": "agent-eval-contract",
+    "identity": "A repository-local contract and fixture surface for evaluating agent behavior against Quality Runner remediation expectations.",
+    "audience": "Maintainers and evaluators who need repeatable, artifact-backed checks for agent-facing repository contracts.",
+    "core_loop": "Define an evaluation contract, run representative cases, compare observed artifacts with the contract, and record the remaining remediation gaps.",
+    "north_star": "A maintainer can tell from a reproducible evaluation artifact whether an agent behavior satisfies the intended repository contract.",
+    "not_this": [
+      "A general-purpose agent benchmark",
+      "A replacement for the evaluated repository's own tests or Quality Runner evidence",
+      "Proof of runtime behavior from documentation alone"
+    ]
+  },
+  "targets": {
+    "mvp": {
+      "definition": "The contract, fixtures, and expected evidence shape are explicit enough to support a focused local evaluation."
+    },
+    "complete_product": {
+      "definition": "Representative evaluations run repeatably, compare actual artifacts with the contract, and preserve actionable failure evidence across repository revisions."
+    }
+  },
+  "pillars": [
+    {
+      "id": "contract-legibility",
+      "name": "Contract legibility",
+      "outcomes": [
+        {
+          "id": "explicit-evaluation-contract",
+          "name": "An evaluator can identify the required inputs, outputs, and acceptance boundaries from the repository contract.",
+          "targets": ["mvp", "complete_product"],
+          "maturity": 25,
+          "confidence": "medium",
+          "layers": {
+            "intended": "The project is intended to make agent-evaluation expectations explicit and inspectable.",
+            "planned": "The planning material calls for contract-level remediation and focused checks.",
+            "implemented": "Repository documentation and contract-oriented files establish the expected evaluation surface.",
+            "verified": "No fresh end-to-end evaluation receipt has been recorded in this bootstrap contract."
+          },
+          "evidence": [
+            {"ref": ".planning/PROJECT.md", "note": "Project purpose and remediation boundary.", "observed_at": "2026-08-08T22:01:35Z"},
+            {"ref": "README.md", "note": "Repository-facing usage and contract context.", "observed_at": "2026-08-08T22:01:35Z"}
+          ],
+          "blockers": [
+            {"kind": "verification", "summary": "A current focused evaluation run and artifact comparison are not yet recorded."}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evaluation-evidence",
+      "name": "Evaluation evidence",
+      "outcomes": [
+        {
+          "id": "repeatable-case-comparison",
+          "name": "Representative cases produce comparable evidence that identifies pass, fail, and ambiguous contract behavior.",
+          "targets": ["complete_product"],
+          "maturity": 0,
+          "confidence": "low",
+          "layers": {
+            "intended": "The repository is intended to support repeatable evaluation rather than one-off inspection.",
+            "planned": "The planning material names focused checks and Quality Runner comparison as the next validation.",
+            "implemented": "The available repository snapshot does not establish a complete artifact-backed comparison path.",
+            "verified": "No current paired evaluation receipt is available."
+          },
+          "evidence": [
+            {"ref": ".planning/PROJECT.md", "note": "Calls for focused checks and Quality Runner comparison.", "observed_at": "2026-08-08T22:01:35Z"}
+          ],
+          "blockers": [
+            {"kind": "verification", "summary": "A real evaluation run, comparison policy, and retained result artifact remain to be established."}
+          ]
+        }
+      ]
+    }
+  ],
+  "source_layers": {
+    "intended": [
+      {"ref": ".planning/PROJECT.md", "note": "Declared evaluation purpose and boundary.", "observed_at": "2026-08-08T22:01:35Z"}
+    ],
+    "planned": [
+      {"ref": ".planning/PROJECT.md", "note": "Remediation and focused-check direction.", "observed_at": "2026-08-08T22:01:35Z"}
+    ],
+    "implemented": [
+      {"ref": "README.md", "note": "Repository usage and current contract surface.", "observed_at": "2026-08-08T22:01:35Z"}
+    ],
+    "verified": []
+  },
+  "drift": [
+    {
+      "kind": "verification-gap",
+      "summary": "The repository purpose is documented, but current paired evaluation behavior and artifact comparison are not yet proven.",
+      "status": "open",
+      "observed_at": "2026-08-08T22:01:35Z",
+      "evidence": [
+        {"ref": ".planning/PROJECT.md", "note": "Validation is named as follow-up work rather than supplied as fresh evidence.", "observed_at": "2026-08-08T22:01:35Z"}
+      ]
+    }
+  ],
+  "updated_at": "2026-08-08T22:01:35Z"
+}
