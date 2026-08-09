@@ -3,10 +3,10 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Any
+from typing import cast
 
 from .clean_room import run_clean_room_contract_check
-from .models import FixtureBundleManifest
+from .models import FixtureBundleManifest, JsonValue
 from .release import load_release_metadata
 from .samples import SAMPLE_FILES, SAMPLE_ROOT, load_sample
 from .schema_export import export_json_schemas
@@ -17,7 +17,7 @@ def write_contract_fixture_bundle(
     output_dir: Path,
     *,
     sample_root: Path = SAMPLE_ROOT,
-) -> dict[str, Any]:
+) -> dict[str, JsonValue]:
     resolved = output_dir.expanduser().resolve()
     samples_dir = resolved / "samples"
     templates_dir = resolved / "templates"
@@ -58,11 +58,12 @@ def write_contract_fixture_bundle(
             "out_of_scope": metadata["out_of_scope"],
         },
     ).model_dump(mode="json")
+    typed_manifest = cast(dict[str, JsonValue], manifest)
     (resolved / "manifest.json").write_text(
-        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        json.dumps(typed_manifest, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    return manifest
+    return typed_manifest
 
 
 def main(argv: list[str] | None = None) -> int:

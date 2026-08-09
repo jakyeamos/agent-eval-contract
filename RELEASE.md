@@ -18,11 +18,13 @@ Releases are automated by `.github/workflows/release.yml` on a `v*` tag (build, 
 CI runs the same quality ladder on pull requests and pushes. Run this local block before tagging or publishing:
 
 ```bash
-uv run ruff check agent_eval_contract tests
-uv run ruff format --check agent_eval_contract tests
-uv run basedpyright agent_eval_contract tests
+uv run ruff check agent_eval_contract scripts tests
+uv run ruff format --check agent_eval_contract scripts tests
+uv run basedpyright agent_eval_contract scripts tests
 uv run pytest -q
+uv run --with vulture vulture agent_eval_contract scripts tests --min-confidence 70
 uv build --out-dir /tmp/agent-eval-contract-dist
+python3 scripts/check_environment_contract.py
 ```
 
 Then install the wheel in a temp virtualenv and smoke test:

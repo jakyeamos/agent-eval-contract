@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import cast
 
 from agent_eval_contract import (
     NormalizedRun,
@@ -12,6 +12,7 @@ from agent_eval_contract import (
     validate_eval_score,
     validate_eval_task,
 )
+from agent_eval_contract.models import JsonValue
 from agent_eval_contract.schema_export import SCHEMA_MODELS
 
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "v0_2_0"
@@ -23,10 +24,10 @@ SNAPSHOT_DIR = Path(__file__).resolve().parent / "snapshots"
 EXPECTED_CONTRACT_VERSION = "0.1"
 
 
-def _load_fixture(name: str) -> dict[str, Any]:
-    loaded = json.loads((FIXTURE_DIR / name).read_text(encoding="utf-8"))
+def _load_fixture(name: str) -> dict[str, JsonValue]:
+    loaded = cast(object, json.loads((FIXTURE_DIR / name).read_text(encoding="utf-8")))
     assert isinstance(loaded, dict)
-    return loaded
+    return cast(dict[str, JsonValue], loaded)
 
 
 def test_v020_eval_task_fixture_still_valid() -> None:
@@ -66,7 +67,10 @@ def test_no_required_field_added_without_contract_bump() -> None:
         # frozen required-field set. Refresh the snapshot alongside the bump.
         return
 
-    frozen = json.loads((SNAPSHOT_DIR / "required_fields_v0_1.json").read_text(encoding="utf-8"))
+    frozen = cast(
+        dict[str, JsonValue],
+        json.loads((SNAPSHOT_DIR / "required_fields_v0_1.json").read_text(encoding="utf-8")),
+    )
     current = {
         schema_id: sorted(model.model_json_schema().get("required", []))
         for schema_id, model in SCHEMA_MODELS.items()

@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import cast
 
 import pytest
 
 from agent_eval_contract.cli import main
+from agent_eval_contract.models import JsonValue
 
 ROOT = Path(__file__).resolve().parents[1]
 EVAL_RUN = ROOT / "examples" / "eval_run.json"
@@ -72,6 +74,6 @@ def test_validate_json_errors_flag(tmp_path: Path, capsys: pytest.CaptureFixture
     bad.write_text(json.dumps({"run_id": "run-1"}), encoding="utf-8")
 
     assert main(["validate", "--kind", "run", "--file", str(bad), "--json-errors"]) == 1
-    errors = json.loads(capsys.readouterr().err)
+    errors = cast(list[dict[str, JsonValue]], json.loads(capsys.readouterr().err))
     assert isinstance(errors, list)
     assert all("loc" in item for item in errors)

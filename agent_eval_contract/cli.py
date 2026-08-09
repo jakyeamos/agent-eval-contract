@@ -5,7 +5,7 @@ import json
 import sys
 from importlib import metadata
 from pathlib import Path
-from typing import Any
+from typing import cast
 
 from pydantic import BaseModel, ValidationError
 
@@ -17,6 +17,7 @@ from .models import (
     EvalScore,
     EvalTask,
     ExternalResult,
+    JsonValue,
     NormalizedRun,
 )
 from .release import load_release_metadata
@@ -45,22 +46,26 @@ _INSPECT_MODELS: dict[str, type[BaseModel]] = {
 }
 
 
-def _load_json(path: Path) -> dict[str, Any]:
-    loaded = json.loads(path.expanduser().resolve().read_text(encoding="utf-8"))
+def _load_json(path: Path) -> dict[str, JsonValue]:
+    loaded = cast(object, json.loads(path.expanduser().resolve().read_text(encoding="utf-8")))
     if not isinstance(loaded, dict):
         raise ValueError(f"{path} must contain a JSON object")
-    return loaded
+    return cast(dict[str, JsonValue], loaded)
 
 
-def _print_json(value: BaseModel | dict[str, Any] | list[str]) -> None:
-    payload = value.model_dump(mode="json") if isinstance(value, BaseModel) else value
+def _model_payload(value: BaseModel) -> dict[str, JsonValue]:
+    return cast(dict[str, JsonValue], value.model_dump(mode="json"))
+
+
+def _print_json(value: BaseModel | dict[str, JsonValue] | list[str]) -> None:
+    payload = _model_payload(value) if isinstance(value, BaseModel) else value
     print(json.dumps(payload, indent=2, sort_keys=True))
 
 
-def _emit(value: BaseModel | dict[str, Any], *, quiet: bool, pretty: bool) -> None:
+def _emit(value: BaseModel | dict[str, JsonValue], *, quiet: bool, pretty: bool) -> None:
     if quiet:
         return
-    payload = value.model_dump(mode="json") if isinstance(value, BaseModel) else value
+    payload = _model_payload(value) if isinstance(value, BaseModel) else value
     indent = 2 if pretty else None
     print(json.dumps(payload, indent=indent, sort_keys=True))
 
@@ -82,7 +87,7 @@ def _run_fixtures(args: argparse.Namespace) -> int:
 
 
 def _run_schemas(args: argparse.Namespace) -> int:
-    _print_json({"schemas": export_json_schemas(Path(args.output_dir))})
+    _print_json({"schemas": cast(list[JsonValue], export_json_schemas(Path(args.output_dir)))})
     return 0
 
 
@@ -111,9 +116,12 @@ def _run_inspect(args: argparse.Namespace) -> int:
             continue
         matches.append(kind)
         record = parsed
-    result: dict[str, Any] = {"file": str(Path(args.file)), "matches": matches}
+    result: dict[str, JsonValue] = {
+        "file": str(Path(args.file)),
+        "matches": cast(list[JsonValue], matches),
+    }
     if len(matches) == 1 and record is not None:
-        result["record"] = record.model_dump(mode="json")
+        result["record"] = _model_payload(record)
     _emit(result, quiet=args.quiet, pretty=args.pretty)
     return 0 if matches else 1
 
