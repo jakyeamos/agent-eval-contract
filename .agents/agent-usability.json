@@ -1,0 +1,17 @@
+{
+  "schema": "agent-usability/v1",
+  "reviewed_at": "2026-08-09",
+  "applicability": "applicable",
+  "tools": [
+    {
+      "id": "agent-eval-contract-cli",
+      "kind": "cli",
+      "documentation": [
+        ".agents/context/commands.md"
+      ],
+      "skills": [],
+      "behavior_evidence": []
+    }
+  ],
+  "skills": []
+}
