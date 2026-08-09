@@ -14,6 +14,9 @@ AIOS-backfill/
 
 .quality-runner/
 
+# Machine-local Mac Control state; this repository has no supported Mac surface.
+/.mac-control/
+
 # Generated / cache / audit output
 .turbo/
 .firecrawl/
