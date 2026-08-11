@@ -1,0 +1,11 @@
+{
+  "schema_version": "change-surface-matrix/v1",
+  "subject": {"kind": "repository", "id": "agent-eval-contract"},
+  "owner": "repository-owner",
+  "last_reviewed": "2026-08-11",
+  "surfaces": [
+    {"id": "contract-core", "scope": "local", "path": "agent_eval_contract/", "owner": "repository-owner", "condition": "record models, validators, or CLI behavior change", "operations": ["add", "change", "remove"], "validation": ["uv run pytest -q", "uv run basedpyright agent_eval_contract scripts tests"], "status": "applicable"},
+    {"id": "package-consumers", "scope": "external", "path": "published package and adapters", "owner": "repository-owner", "condition": "public schema, adapter, or compatibility contract changes", "operations": ["add", "change", "remove"], "validation": ["tests/test_backward_compatibility.py", "uv build --out-dir /tmp/agent-eval-contract-dist"], "status": "applicable"}
+  ],
+  "unresolved_surfaces": []
+}
