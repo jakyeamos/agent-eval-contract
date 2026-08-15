@@ -2,8 +2,21 @@
   "schema_version": "change-surface-matrix/v1",
   "subject": {"kind": "repository", "id": "agent-eval-contract"},
   "owner": "repository-owner",
-  "last_reviewed": "2026-08-11",
+  "last_reviewed": "2026-08-13",
   "surfaces": [
+    {
+      "id": "matrix-maintenance",
+      "scope": "local",
+      "path": ".agents/change-surface-matrix.json",
+      "owner": "repository-owner",
+      "condition": "A material feature, functionality, behavior, CLI/API, workflow, data, integration, security/privacy, or quality/release change is added or changed.",
+      "operations": ["add", "change", "remove"],
+      "validation": [
+        "Update this matrix in the same change with affected surfaces, contracts, documentation, tests, evidence, owners, and projections.",
+        "For a purely internal refactor or isolated fix with no matrix impact, record a reviewed no-impact reason in the same change record; omission is not an implicit no-impact decision."
+      ],
+      "status": "applicable"
+    },
     {"id": "contract-core", "scope": "local", "path": "agent_eval_contract/", "owner": "repository-owner", "condition": "record models, validators, or CLI behavior change", "operations": ["add", "change", "remove"], "validation": ["uv run pytest -q", "uv run basedpyright agent_eval_contract scripts tests"], "status": "applicable"},
     {"id": "package-consumers", "scope": "external", "path": "published package and adapters", "owner": "repository-owner", "condition": "public schema, adapter, or compatibility contract changes", "operations": ["add", "change", "remove"], "validation": ["tests/test_backward_compatibility.py", "uv build --out-dir /tmp/agent-eval-contract-dist"], "status": "applicable"}
   ],
