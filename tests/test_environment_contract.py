@@ -48,6 +48,18 @@ def _minimal_contract(root: Path) -> None:
     }
     (root / ".pre-cr.json").write_text(json.dumps(pre_cr), encoding="utf-8")
     (root / ".gitignore").write_text("\n".join(CONTRACT.REQUIRED_GITIGNORE), encoding="utf-8")
+    (root / ".github" / "workflows" / "ci.yml").write_text(
+        "run: python3 scripts/check_environment_contract.py\n", encoding="utf-8"
+    )
+    (root / ".quality-runner.toml").write_text(
+        """[[quality_runner.gates]]
+id = \"environment_contract\"
+command = \"python3 scripts/check_environment_contract.py\"
+required = true
+severity = \"blocker\"
+""",
+        encoding="utf-8",
+    )
 
 
 def test_environment_contract_accepts_complete_private_surface(tmp_path: Path) -> None:
@@ -73,3 +85,11 @@ def test_environment_contract_rejects_stale_context(tmp_path: Path) -> None:
     result = CONTRACT.validate_contract(tmp_path, date(2026, 7, 25), paths=[])
     assert result["status"] == "fail"
     assert "context index is stale: 2026-01-01" in result["errors"]
+
+
+def test_environment_contract_rejects_missing_ci_guard(tmp_path: Path) -> None:
+    _minimal_contract(tmp_path)
+    (tmp_path / ".github" / "workflows" / "ci.yml").write_text("run: pytest\n", encoding="utf-8")
+    result = CONTRACT.validate_contract(tmp_path, date(2026, 7, 25), paths=[])
+    assert result["status"] == "fail"
+    assert "CI must invoke the environment-contract checker" in result["errors"]

@@ -37,6 +37,8 @@ REQUIRED_FILES: tuple[str, ...] = (
     "pyproject.toml",
     "uv.lock",
     "scripts/pre_cr_coverage.py",
+    ".github/workflows/ci.yml",
+    ".quality-runner.toml",
 )
 REQUIRED_GITIGNORE: tuple[str, ...] = (
     ".env",
@@ -164,6 +166,49 @@ def _check_pre_cr(root: Path, errors: list[str]) -> bool:
     return environment_adapter
 
 
+def _check_ci(root: Path, errors: list[str]) -> bool:
+    try:
+        ci_text = (root / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    except OSError as error:
+        errors.append(f"unable to read CI workflow: {error}")
+        return False
+    required_command = "python3 scripts/check_environment_contract.py"
+    if required_command not in ci_text:
+        errors.append("CI must invoke the environment-contract checker")
+        return False
+    return True
+
+
+def _check_quality_runner(root: Path, errors: list[str]) -> bool:
+    try:
+        config = tomllib.loads((root / ".quality-runner.toml").read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError) as error:
+        errors.append(f"invalid .quality-runner.toml: {error}")
+        return False
+    quality_runner_value = config.get("quality_runner", {})
+    if not isinstance(quality_runner_value, dict):
+        errors.append(".quality-runner.toml quality_runner must be a table")
+        return False
+    quality_runner = cast(dict[str, object], quality_runner_value)
+    gates_value = quality_runner.get("gates", [])
+    if not isinstance(gates_value, list):
+        errors.append(".quality-runner.toml quality_runner.gates must be a list")
+        return False
+    for item in cast(list[object], gates_value):
+        if not isinstance(item, dict):
+            continue
+        gate = cast(dict[str, object], item)
+        if (
+            gate.get("id") == "environment_contract"
+            and gate.get("command") == "python3 scripts/check_environment_contract.py"
+            and gate.get("required") is True
+            and gate.get("severity") == "blocker"
+        ):
+            return True
+    errors.append("required environment_contract Quality Runner gate is missing or drifted")
+    return False
+
+
 def _check_gitignore(root: Path, errors: list[str]) -> None:
     try:
         entries = {
@@ -197,6 +242,8 @@ def validate_contract(
     context_packets = _check_context(root, errors, as_of)
     strict_type_checking = _check_pyproject(root, errors)
     required_pre_cr_adapter = _check_pre_cr(root, errors)
+    ci_environment_contract = _check_ci(root, errors)
+    required_quality_runner_gate = _check_quality_runner(root, errors)
     _check_gitignore(root, errors)
     tracked = paths if paths is not None else _tracked_paths(root)
     if tracked is None:
@@ -223,6 +270,8 @@ def validate_contract(
                 error.startswith("secret-like tracked path:") for error in unique_errors
             ),
             "required_pre_cr_adapter": required_pre_cr_adapter,
+            "ci_environment_contract": ci_environment_contract,
+            "required_quality_runner_gate": required_quality_runner_gate,
         },
     }
 

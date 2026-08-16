@@ -6,3 +6,13 @@ source = "uv.lock"
 owner = "platform"
 required = true
 severity = "blocker"
+
+[[quality_runner.gates]]
+id = "environment_contract"
+command = "python3 scripts/check_environment_contract.py"
+ecosystem = "python"
+source = "scripts/check_environment_contract.py"
+owner = "repository"
+required = true
+severity = "blocker"
+mutating_risk = "safe"
