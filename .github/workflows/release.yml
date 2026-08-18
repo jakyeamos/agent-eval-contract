@@ -25,20 +25,27 @@ jobs:
       - name: Install dependencies
         run: uv sync --dev
 
+      - name: Check release metadata
+        run: uv run python scripts/check_release_metadata.py
+
+      - name: Check release tag version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: uv run python scripts/check_release_metadata.py --tag "${GITHUB_REF_NAME}"
+
       - name: Ruff lint
-        run: uv run ruff check agent_eval_contract tests
+        run: uv run ruff check agent_eval_contract tests scripts
 
       - name: Ruff format check
-        run: uv run ruff format --check agent_eval_contract tests
+        run: uv run ruff format --check agent_eval_contract tests scripts
 
       - name: Type check
-        run: uv run basedpyright agent_eval_contract tests
+        run: uv run basedpyright agent_eval_contract tests scripts
 
       - name: Tests
         run: uv run pytest -q
 
       - name: Dead code scan
-        run: uv run --with vulture vulture agent_eval_contract tests --min-confidence 70
+        run: uv run --with vulture vulture agent_eval_contract tests scripts --min-confidence 70
 
       - name: Build package
         run: uv build --out-dir dist
@@ -50,10 +57,16 @@ jobs:
         run: |
           python -m venv /tmp/release-smoke
           /tmp/release-smoke/bin/python -m pip install dist/agent_eval_contract-*.whl
-          /tmp/release-smoke/bin/agent-eval-contract validate --kind run --file examples/eval_run.json
-          /tmp/release-smoke/bin/agent-eval-contract schemas --output-dir /tmp/release-schemas
-          /tmp/release-smoke/bin/agent-eval-contract normalize --harness swe-bench --file examples/swe_bench_result.json
+          /tmp/release-smoke/bin/agent-eval-contract --help
+          /tmp/release-smoke/bin/agent-eval-contract --version
           /tmp/release-smoke/bin/agent-eval-contract version
+          /tmp/release-smoke/bin/agent-eval-contract validate --kind run --file examples/eval_run.json
+          /tmp/release-smoke/bin/agent-eval-contract inspect --file examples/eval_run.json
+          /tmp/release-smoke/bin/agent-eval-contract normalize --harness terminal-bench --file examples/terminal_bench_result.json --task-id task-login-flow-001 --model gpt-5
+          /tmp/release-smoke/bin/agent-eval-contract schemas --output-dir /tmp/release-schemas
+          /tmp/release-smoke/bin/agent-eval-contract fixtures --output-dir /tmp/release-fixtures
+          /tmp/release-smoke/bin/agent-eval-contract normalize --harness swe-bench --file examples/swe_bench_result.json
+          /tmp/release-smoke/bin/agent-eval-contract-fixtures --output-dir /tmp/release-fixtures-compat
 
       - name: Upload distribution artifacts
         uses: actions/upload-artifact@v4

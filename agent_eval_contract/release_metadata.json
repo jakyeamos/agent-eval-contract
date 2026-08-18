@@ -35,5 +35,8 @@
     "agent_eval_contract.cli",
     "agent_eval_contract.release"
   ],
-  "release_blockers": []
+  "release_blockers": [
+    "PyPI currently publishes 0.2.0; the repository's 0.3.0 candidate is not published.",
+    "This post-tag cleanup must be merged before publishing; do not run `gh workflow run release.yml --ref v0.3.0` until the final release tag points at the merged commit."
+  ]
 }

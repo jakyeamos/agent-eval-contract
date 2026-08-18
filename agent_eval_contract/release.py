@@ -20,6 +20,7 @@ REQUIRED_RELEASE_METADATA_KEYS = (
     "public_modules",
     "release_blockers",
 )
+RELEASE_STATUSES = {"public_package_candidate", "published"}
 
 
 def load_release_metadata(path: Path = RELEASE_METADATA_PATH) -> dict[str, JsonValue]:
@@ -37,7 +38,8 @@ def validate_release_metadata(metadata: Mapping[str, JsonValue]) -> None:
         raise ValueError(f"Agent eval release metadata is missing keys: {', '.join(missing)}")
     if metadata["package_name"] != "agent-eval-contract":
         raise ValueError("Agent eval release metadata package_name must be agent-eval-contract.")
-    if metadata["status"] not in {"public_package_candidate", "published"}:
+    status = metadata["status"]
+    if not isinstance(status, str) or status not in RELEASE_STATUSES:
         raise ValueError("Agent eval release metadata status is invalid.")
     if not isinstance(metadata["public_promise"], str) or not metadata["public_promise"].strip():
         raise ValueError("Agent eval release metadata public_promise must be a non-empty string.")
@@ -53,4 +55,12 @@ def validate_release_metadata(metadata: Mapping[str, JsonValue]) -> None:
     if not isinstance(blockers, list) or not all(isinstance(item, str) for item in blockers):
         raise ValueError(
             "Agent eval release metadata field 'release_blockers' must be a string list."
+        )
+    if status == "public_package_candidate" and not blockers:
+        raise ValueError(
+            "Agent eval release metadata public_package_candidate status must list release blockers."
+        )
+    if status == "published" and blockers:
+        raise ValueError(
+            "Agent eval release metadata published status cannot list release blockers."
         )
