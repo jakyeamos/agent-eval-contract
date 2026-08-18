@@ -20,6 +20,31 @@ def test_version_reports_package_and_contract(capsys: pytest.CaptureFixture[str]
     assert any(line.startswith("contract: ") for line in out.splitlines())
 
 
+def test_root_version_matches_version_subcommand(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    with pytest.raises(SystemExit) as result:
+        main(["--version"])
+    assert result.value.code == 0
+    root_output = capsys.readouterr().out
+
+    assert main(["version"]) == 0
+    assert root_output == capsys.readouterr().out
+
+
+def test_root_help_lists_canonical_cli_and_version_flag(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    with pytest.raises(SystemExit) as result:
+        main(["--help"])
+    assert result.value.code == 0
+    output = capsys.readouterr().out
+    assert "usage: agent-eval-contract" in output
+    assert "--version" in output
+    assert "fixtures" in output
+    assert "version" in output
+
+
 def test_inspect_infers_kind(capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["inspect", "--file", str(EVAL_RUN)]) == 0
     result = json.loads(capsys.readouterr().out)

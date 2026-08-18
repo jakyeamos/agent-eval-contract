@@ -186,7 +186,26 @@ def test_bundled_samples_and_release_metadata_validate() -> None:
     public_surfaces = metadata["public_surfaces"]
     assert isinstance(public_surfaces, list)
     assert "Pydantic evaluation record models" in cast(list[object], public_surfaces)
-    assert metadata["release_blockers"] == []
+    assert metadata["status"] == "public_package_candidate"
+    release_blockers = metadata["release_blockers"]
+    assert isinstance(release_blockers, list)
+    assert any(
+        isinstance(blocker, str) and "PyPI" in blocker and "0.2.0" in blocker
+        for blocker in release_blockers
+    )
+
+
+def test_release_metadata_candidate_and_published_states_are_distinct() -> None:
+    candidate = load_release_metadata()
+    candidate["release_blockers"] = []
+    with pytest.raises(ValueError, match="candidate status must list release blockers"):
+        validate_release_metadata(candidate)
+
+    published = load_release_metadata()
+    published["status"] = "published"
+    published["release_blockers"] = ["publication pending"]
+    with pytest.raises(ValueError, match="published status cannot list release blockers"):
+        validate_release_metadata(published)
 
 
 def test_schema_export_writes_public_model_schemas(tmp_path: Path) -> None:

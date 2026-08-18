@@ -35,6 +35,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --dev
 
+      - name: Check release metadata
+        run: uv run python scripts/check_release_metadata.py
+
       - name: Ruff lint
         run: uv run ruff check agent_eval_contract scripts tests
 
@@ -60,6 +63,13 @@ jobs:
         run: |
           python -m venv /tmp/agent-eval-contract-smoke
           /tmp/agent-eval-contract-smoke/bin/python -m pip install dist/agent_eval_contract-*.whl
+          /tmp/agent-eval-contract-smoke/bin/agent-eval-contract --help
+          /tmp/agent-eval-contract-smoke/bin/agent-eval-contract --version
+          /tmp/agent-eval-contract-smoke/bin/agent-eval-contract version
           /tmp/agent-eval-contract-smoke/bin/agent-eval-contract validate --kind run --file examples/eval_run.json
-          /tmp/agent-eval-contract-smoke/bin/agent-eval-contract schemas --output-dir /tmp/agent-eval-contract-schemas
+          /tmp/agent-eval-contract-smoke/bin/agent-eval-contract inspect --file examples/eval_run.json
           /tmp/agent-eval-contract-smoke/bin/agent-eval-contract normalize --harness terminal-bench --file examples/terminal_bench_result.json --task-id task-login-flow-001 --model gpt-5
+          /tmp/agent-eval-contract-smoke/bin/agent-eval-contract schemas --output-dir /tmp/agent-eval-contract-schemas
+          /tmp/agent-eval-contract-smoke/bin/agent-eval-contract fixtures --output-dir /tmp/agent-eval-contract-fixtures
+          /tmp/agent-eval-contract-smoke/bin/agent-eval-contract normalize --harness swe-bench --file examples/swe_bench_result.json
+          /tmp/agent-eval-contract-smoke/bin/agent-eval-contract-fixtures --output-dir /tmp/agent-eval-contract-fixtures-compat

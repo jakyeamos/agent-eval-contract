@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- CLI: root `--version` now mirrors the existing `version` subcommand, and root help exposes both surfaces consistently.
+- Release readiness: candidate metadata records that `0.3.0` is not yet published to PyPI.
+
 ## 0.3.0 - 2026-07-05
 
 ### Added
