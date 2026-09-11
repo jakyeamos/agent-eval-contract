@@ -1,0 +1,53 @@
+{
+  "schema": "compass-behavior-inventory/v1",
+  "behaviors": [
+    {
+      "id": "portable-validation",
+      "title": "Strict portable evaluation records reject unknown fields and preserve extension metadata",
+      "spec_ref": "docs/contract.md",
+      "authority": "accepted"
+    },
+    {
+      "id": "external-normalization",
+      "title": "Normalize harness output while retaining raw JSON-compatible evidence",
+      "spec_ref": "docs/adapters.md",
+      "authority": "accepted"
+    },
+    {
+      "id": "schema-compatibility",
+      "title": "Export runtime-aligned schemas and guard historical record compatibility",
+      "spec_ref": "docs/stability.md",
+      "authority": "accepted"
+    },
+    {
+      "id": "cli-and-fixtures",
+      "title": "Inspect/validate/normalize records and emit reproducible fixture bundles",
+      "spec_ref": "README.md",
+      "authority": "accepted"
+    },
+    {
+      "id": "typed-record-fixtures",
+      "title": "Local typed record validation, unknown EvalRun field rejection, metadata extension, score and vocabulary fixtures",
+      "spec_ref": "docs/contract.md",
+      "authority": "accepted"
+    },
+    {
+      "id": "normalization-fixtures",
+      "title": "Supplied Terminal-Bench/SWE-bench sample status, checks, duration, score and raw-success field normalization",
+      "spec_ref": "docs/adapters.md",
+      "authority": "accepted"
+    },
+    {
+      "id": "frozen-schema-fixtures",
+      "title": "Committed schema bytes, model snapshot coverage, five frozen records and unchanged-version required-field guard",
+      "spec_ref": "docs/stability.md",
+      "authority": "accepted"
+    },
+    {
+      "id": "local-cli-fixture-generation",
+      "title": "Local CLI argument/output and failure-format fixtures plus generated bundle existence and sample/template validation",
+      "spec_ref": "README.md",
+      "authority": "accepted"
+    }
+  ]
+}

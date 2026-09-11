@@ -1,0 +1,226 @@
+{
+  "schema": "compass-development/v1",
+  "revision": 3,
+  "inventory": {
+    "source": "git-tracked",
+    "include": [
+      "**"
+    ],
+    "exclude": [
+      {
+        "pattern": ".project-compass/evidence/**",
+        "kind": "generated",
+        "reason": "Local proof observations; not canonical product inputs."
+      }
+    ],
+    "behavior_ref": ".project-compass/behaviors.json"
+  },
+  "bindings": [
+    {
+      "id": "portable-contract-source",
+      "compass_id": "project",
+      "authority": "accepted",
+      "paths": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/release.yml",
+        "MANIFEST.in",
+        "agent_eval_contract/__init__.py",
+        "agent_eval_contract/clean_room.py",
+        "agent_eval_contract/cli.py",
+        "agent_eval_contract/external.py",
+        "agent_eval_contract/fixture_runner.py",
+        "agent_eval_contract/models.py",
+        "agent_eval_contract/py.typed",
+        "agent_eval_contract/release.py",
+        "agent_eval_contract/release_metadata.json",
+        "agent_eval_contract/samples.py",
+        "agent_eval_contract/samples/eval_failure.json",
+        "agent_eval_contract/samples/eval_run.json",
+        "agent_eval_contract/samples/eval_score.json",
+        "agent_eval_contract/samples/eval_task.json",
+        "agent_eval_contract/samples/external_result_normalization.json",
+        "agent_eval_contract/schema_export.py",
+        "agent_eval_contract/schemas.py",
+        "agent_eval_contract/templates.py",
+        "agent_eval_contract/validators.py",
+        "examples/README.md",
+        "examples/ci_pytest_eval/emit_eval_run.py",
+        "examples/ci_pytest_eval/eval_task.json",
+        "examples/ci_pytest_eval/validate_eval_artifacts.sh",
+        "examples/dashboard_ingest/export_schemas.py",
+        "examples/dashboard_ingest/validate_before_upload.py",
+        "examples/eval_run.json",
+        "examples/swe_bench_normalization/normalize.py",
+        "examples/swe_bench_normalization/swe_bench_result.json",
+        "examples/swe_bench_result.json",
+        "examples/terminal_bench_result.json",
+        "pyproject.toml",
+        "scripts/check_environment_contract.py",
+        "scripts/check_release_metadata.py",
+        "scripts/pre_cr_coverage.py",
+        "tests/fixtures/v0_2_0/eval_failure.json",
+        "tests/fixtures/v0_2_0/eval_run.json",
+        "tests/fixtures/v0_2_0/eval_score.json",
+        "tests/fixtures/v0_2_0/eval_task.json",
+        "tests/fixtures/v0_2_0/normalized_run.json",
+        "tests/snapshots/required_fields_v0_1.json",
+        "tests/snapshots/schemas/eval_failure.schema.json",
+        "tests/snapshots/schemas/eval_run.schema.json",
+        "tests/snapshots/schemas/eval_score.schema.json",
+        "tests/snapshots/schemas/eval_task.schema.json",
+        "tests/snapshots/schemas/external_result.schema.json",
+        "tests/snapshots/schemas/fixture_bundle_manifest.schema.json",
+        "tests/snapshots/schemas/normalized_run.schema.json",
+        "tests/test_agent_eval_contract.py",
+        "tests/test_backward_compatibility.py",
+        "tests/test_cli_ergonomics.py",
+        "tests/test_environment_contract.py",
+        "tests/test_schema_snapshots.py",
+        "uv.lock",
+        ".project-compass/contract.json",
+        ".project-compass/compasses.json",
+        ".project-compass/continuity.json",
+        ".project-compass/development.json",
+        ".project-compass/behaviors.json",
+        ".project-compass/purpose-reconciliation.md",
+        ".project-compass/history/contract-revision-1.json",
+        ".agents/change-surface-matrix.json",
+        "README.md",
+        "docs/writing-adapters.md",
+        ".agents/context/README.md"
+      ],
+      "outcomes": [
+        "portable-record-contract",
+        "external-result-exchange",
+        "compatible-consumption"
+      ],
+      "references": [
+        "README.md",
+        ".agents/context/architecture.md",
+        "tests/test_agent_eval_contract.py",
+        "tests/test_backward_compatibility.py",
+        "docs/contract.md",
+        "docs/adapters.md",
+        "docs/stability.md",
+        "docs/writing-adapters.md",
+        "tests/test_schema_snapshots.py",
+        "tests/test_cli_ergonomics.py",
+        ".project-compass/purpose-reconciliation.md",
+        "SECURITY.md"
+      ],
+      "constraints": [
+        "Validate supplied records; do not run evaluations, invoke model providers, orchestrate agents or store evaluation history.",
+        "Reject unknown top-level model fields; place harness-specific details in metadata or a separate adapter.",
+        "Preserve docs/stability.md compatibility policy, committed schemas, frozen records and package/contract version distinction.",
+        "Keep raw JSON-compatible harness evidence separate from claims that the supplied evaluation was correct.",
+        "Local fixture success must not establish live harness execution, cross-language consumer acceptance, installed registry parity or publication.",
+        "Treat Quality Runner remediation as maintenance and preserve the original superseded root history."
+      ],
+      "proof": [
+        {
+          "id": "typed-records",
+          "receipt": ".project-compass/evidence/typed-records.json",
+          "command": [
+            "uv",
+            "run",
+            "--locked",
+            "pytest",
+            "-q",
+            "tests/test_agent_eval_contract.py::test_eval_run_model_rejects_unknown_core_fields",
+            "tests/test_agent_eval_contract.py::test_metadata_accepts_extension_data",
+            "tests/test_agent_eval_contract.py::test_public_validators_return_typed_models",
+            "tests/test_agent_eval_contract.py::test_invalid_scores_expose_pydantic_errors",
+            "tests/test_agent_eval_contract.py::test_contract_vocabulary_validates"
+          ],
+          "oracle_ref": "tests/test_agent_eval_contract.py",
+          "behavior_ids": [
+            "typed-record-fixtures"
+          ]
+        },
+        {
+          "id": "normalization",
+          "receipt": ".project-compass/evidence/normalization.json",
+          "command": [
+            "uv",
+            "run",
+            "--locked",
+            "pytest",
+            "-q",
+            "tests/test_agent_eval_contract.py::test_external_result_normalization_returns_complete_normalized_run",
+            "tests/test_agent_eval_contract.py::test_terminal_bench_adapter_handles_command_and_seconds",
+            "tests/test_agent_eval_contract.py::test_swe_bench_adapter_reads_instance_and_test_lists"
+          ],
+          "oracle_ref": "tests/test_agent_eval_contract.py",
+          "behavior_ids": [
+            "normalization-fixtures"
+          ]
+        },
+        {
+          "id": "compatibility",
+          "receipt": ".project-compass/evidence/compatibility.json",
+          "command": [
+            "uv",
+            "run",
+            "--locked",
+            "pytest",
+            "-q",
+            "tests/test_backward_compatibility.py",
+            "tests/test_schema_snapshots.py"
+          ],
+          "oracle_ref": "tests/test_backward_compatibility.py",
+          "behavior_ids": [
+            "frozen-schema-fixtures"
+          ]
+        },
+        {
+          "id": "cli-fixtures",
+          "receipt": ".project-compass/evidence/cli-fixtures.json",
+          "command": [
+            "uv",
+            "run",
+            "--locked",
+            "pytest",
+            "-q",
+            "tests/test_cli_ergonomics.py",
+            "tests/test_agent_eval_contract.py::test_eval_template_renderer_produces_valid_public_templates",
+            "tests/test_agent_eval_contract.py::test_bundled_samples_and_release_metadata_validate",
+            "tests/test_agent_eval_contract.py::test_release_metadata_candidate_and_published_states_are_distinct",
+            "tests/test_agent_eval_contract.py::test_schema_export_writes_public_model_schemas",
+            "tests/test_agent_eval_contract.py::test_clean_room_runner_uses_generated_templates",
+            "tests/test_agent_eval_contract.py::test_fixture_bundle_writer_produces_public_artifacts",
+            "tests/test_agent_eval_contract.py::test_main_cli_subcommands_work",
+            "tests/test_agent_eval_contract.py::test_deprecated_fixture_runner_cli_still_works"
+          ],
+          "oracle_ref": "tests/test_cli_ergonomics.py",
+          "behavior_ids": [
+            "local-cli-fixture-generation"
+          ]
+        }
+      ],
+      "behavior_ids": [
+        "typed-record-fixtures",
+        "normalization-fixtures",
+        "frozen-schema-fixtures",
+        "local-cli-fixture-generation"
+      ],
+      "handoff_review": "Existing canonical source responsibilities are associated under the accepted product purpose. Four broad requirements remain unbound: portable-validation, external-normalization, schema-compatibility and cli-and-fixtures. The linked tests establish only the four named local fixture scopes. They do not establish all-model negative coverage, arbitrary raw-field preservation, reverse-adapter correctness, exhaustive compatibility evolution, cross-language validation, installed package parity or real downstream adoption. Example/CI/release/support paths participate as ownership/freshness support, not independent behavior proof. docs/stability.md is the direct compatibility owner; contradictory adapter-guide wording was corrected to that existing policy after review. External harnesses own evaluation execution and result correctness.",
+      "decision_id": "ratified-purpose-source-association",
+      "dependencies": []
+    }
+  ],
+  "decisions": [
+    {
+      "id": "historical-maintenance-identity",
+      "summary": "Historical root promoted Quality Runner remediation to product identity. Exact old bytes retained.",
+      "source": ".project-compass/history/contract-revision-1.json",
+      "status": "superseded"
+    },
+    {
+      "id": "ratified-purpose-source-association",
+      "summary": "User accepted portable record validation/schema/normalization purpose; associate existing specified responsibilities and explicitly limited fixture oracles.",
+      "source": ".project-compass/purpose-reconciliation.md",
+      "status": "accepted",
+      "supersedes": "historical-maintenance-identity"
+    }
+  ]
+}

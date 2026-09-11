@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "revision": 1,
+  "commitments": [
+    {
+      "id": "maintenance-derived-identity",
+      "kind": "goal",
+      "statement": "Prior root defined evaluation against Quality Runner remediation expectations.",
+      "status": "superseded",
+      "source": {
+        "ref": ".project-compass/history/contract-revision-1.json",
+        "note": "Exact historical root, unchanged.",
+        "observed_at": "2026-09-11T18:52:23.675055Z"
+      }
+    },
+    {
+      "id": "portable-contract-purpose",
+      "kind": "decision",
+      "statement": "A public provider-neutral Python contract layer for portable agent evaluation records, JSON Schemas and external-result normalization. The package does not run evaluations or models; QR remediation is maintenance only.",
+      "status": "active",
+      "source": {
+        "ref": ".project-compass/purpose-reconciliation.md",
+        "note": "User ratification as reported by coordinating task on 2026-09-11.",
+        "observed_at": "2026-09-11T18:52:23.675055Z"
+      }
+    }
+  ],
+  "reconciliations": [
+    {
+      "id": "ratified-product-purpose",
+      "observed_at": "2026-09-11T18:52:23.675055Z",
+      "source": {
+        "ref": ".project-compass/purpose-reconciliation.md",
+        "note": "User ratification as reported by coordinating task on 2026-09-11.",
+        "observed_at": "2026-09-11T18:52:23.675055Z"
+      },
+      "classification": "superseding",
+      "materiality": "high",
+      "incoming": "User explicitly accepted documented provider-neutral validation/schema/normalization purpose.",
+      "project_evidence": [
+        {
+          "ref": "README.md",
+          "note": "Public purpose.",
+          "observed_at": "2026-09-11T18:52:23.675055Z"
+        },
+        {
+          "ref": ".agents/context/architecture.md",
+          "note": "Explicit no-runner boundary.",
+          "observed_at": "2026-09-11T18:52:23.675055Z"
+        }
+      ],
+      "preserved": [
+        "Strict record vocabulary and metadata extensions",
+        "Schema snapshots and frozen backward compatibility",
+        "No publication or operational proof inference"
+      ],
+      "changed": [
+        "Root identity and target structure now describe portable record consumption."
+      ],
+      "contradicted": [
+        "Historical maintenance-derived eval-execution identity."
+      ],
+      "deferred": [
+        "External downstream operational evidence."
+      ],
+      "left_behind": [
+        "Evaluation execution as a product responsibility; historical root retained."
+      ],
+      "unknown": [
+        "Published current-candidate parity and downstream operational adoption."
+      ],
+      "disposition": "recorded-supersession",
+      "question": "Resolved by explicit user purpose acceptance.",
+      "reason": "Maintenance planning had been misclassified as product purpose.",
+      "user_decision": "Use the documented provider-neutral record/schema validation and normalization purpose; does not run evaluations/models; QR remediation is maintenance only.",
+      "decision_source": {
+        "ref": ".project-compass/purpose-reconciliation.md",
+        "note": "User ratification as reported by coordinating task on 2026-09-11.",
+        "observed_at": "2026-09-11T18:52:23.675055Z"
+      }
+    }
+  ],
+  "updated_at": "2026-09-11T18:52:23.675055Z"
+}

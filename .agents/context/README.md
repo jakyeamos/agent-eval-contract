@@ -3,7 +3,7 @@ id: agent-eval-contract.repo-context
 title: Agent Eval Contract Repository Context
 tier: project
 status: active
-last_reviewed: 2026-07-25
+last_reviewed: 2026-09-11
 applies_when:
   - repo_context
 tags:
