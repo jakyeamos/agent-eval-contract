@@ -49,8 +49,11 @@ strings and drop non-serializable objects before storing them.
 ## Enum values vs metadata
 
 Add a value to a public enum (for example, a new `final_status`) only when it is
-harness-independent and belongs in the shared contract; that is a contract
-change and bumps `contract_version` (see [stability.md](stability.md)). For
+harness-independent and belongs in the shared contract. Under
+[the stability policy](stability.md), additive backward-compatible enum members
+do not require a `contract_version` bump but are recorded in the changelog;
+changes that reject previously valid records or change field meaning require
+a contract-version bump. For
 anything harness-specific or project-specific, use `metadata` instead of
 widening the core vocabulary.
 
